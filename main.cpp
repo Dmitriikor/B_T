@@ -20,26 +20,46 @@ int main()
 	{
 		// Создаем бинарное дерево
 		BinaryTree<int> tree;
+		tree.insert(11);
 		tree.insert(5);
-		tree.insert(3);
-		tree.insert(7);
-		tree.insert(2);
-		tree.insert(4);
-		tree.insert(6);
-		tree.insert(8);
-		tree.insert(4);
+		tree.insert(20);
+		tree.insert(17);
+		tree.insert(12);
+		tree.insert(19);
+		tree.insert(30);
+		tree.insert(27);
+		tree.insert(35);
+		tree.insert(28);
+		tree.insert(29);
 		tree.insert(0);
-		tree.insert(2);
 		tree.insert(-1);
-		tree.insert(5);
-		tree.insert(6);
 		tree.insert(10);
 		tree.insert(8);
 		tree.insert(7);
 		tree.insert(9);
-		tree.insert(11);
+		//tree.insert(11);
 		tree.print_in_order();
+		tree.find(8);
+		tree.find(9);
+		tree.find(7);
+		tree.find(5);
 		tree.find(0);
+		tree.find(-1);
+
+		tree.find(11);
+
+		tree.find(29);
+		tree.find(28);
+		tree.find(30);
+		tree.find(35);
+		tree.find(20);
+		tree.find(17);
+		tree.find(12);
+
+
+		tree.find(10);
+		tree.find(19);
+
 		//// Проверяем поиск
 		//std::shared_ptr<Node<int>> foundNode;
 		//foundNode = tree.find(5);

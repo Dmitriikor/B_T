@@ -18,6 +18,11 @@ struct Node
 
 	}
 
+	Node(const T& value, std::weak_ptr<Node<T>> parent) : data(value), parent(parent)/*, parent(this)*/
+	{
+
+	}
+
 	~Node()
 	{
 

@@ -7,7 +7,7 @@ class BinaryTree
 {
 private:
 	std::shared_ptr<Node<T>> root_;
-	//int cntr_ = 0;
+	int cntr_ = 0;
 	size_t size_ = 0;
 
 public:
@@ -15,7 +15,8 @@ public:
 
 	void insert(const T& value)
 	{
-		if (!root_) {
+		if (!root_)
+		{
 			root_ = std::make_shared<Node<T>>(value);
 		}
 		else {
@@ -37,7 +38,7 @@ public:
 	void print_in_order()
 	{
 		//print_orderR(root_, cntr_);
-		//std::cout << "\n";
+		std::cout << "\n";
 		print_order_chatGPT(root_);
 		std::cout << "\n";
 
@@ -52,9 +53,12 @@ public:
 		//	std::cout << "none\n";
 		//	return false;
 		//}
+		std::cout << "\n\n";
+		std::cout << value;
+		std::cout << "\n\n";
 		erase(value);
 		print_in_order();
-		system("pause");
+		//system("pause");
 
 
 
@@ -76,46 +80,52 @@ private:
 
 		if (erased->left == nullptr && erased->right == nullptr)
 		{
-			std::shared_ptr<Node<T>> parent = erased->parent.lock();
-			if (!parent)
+			std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+			if (!erased_parent)
 			{
+				erased.reset();
+				root_.reset();
 				return;
 			}
-			if (parent->left == erased)
+			if (erased_parent->left == erased)
 			{
-				parent->left = nullptr;
+				erased_parent->left = nullptr;
 				return;
 			}
-			if (parent->right == erased)
+			if (erased_parent->right == erased)
 			{
-				parent->right = nullptr;
+				erased_parent->right = nullptr;
 				return;
 			}
 			throw std::logic_error("Error deleting resource");
 		}
 		if (erased->left != nullptr && erased->right == nullptr)
 		{
-			std::shared_ptr<Node<T>> parent = erased->parent.lock();
-			if (!parent)
+			std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+			if (!erased_parent)
 			{
+				std::shared_ptr<Node<T>> new_root = erased->left;
+				root_->left = nullptr;
+				root_ = new_root;
+				erased.reset();
 				return;
 			}
 
-			std::cout << "\nerased->left != nullptr && erased->right == nullptr\n";
+			//std::cout << "\nerased->left != nullptr && erased->right == nullptr\n";
 
 			std::shared_ptr<Node<T>> erased_chaild = erased->left;
-			if (parent->left == erased)
+			if (erased_parent->left == erased)
 			{
-				parent->left = erased_chaild;
-				erased_chaild->parent = parent;
+				erased_parent->left = erased_chaild;
+				erased_chaild->parent = erased_parent;
 				erased->left = nullptr;
 				erased = nullptr;
 				return;
 			}
-			if (parent->right == erased)
+			if (erased_parent->right == erased)
 			{
-				parent->right = erased_chaild;
-				erased_chaild->parent = parent;
+				erased_parent->right = erased_chaild;
+				erased_chaild->parent = erased_parent;
 				erased->right = nullptr;
 				erased = nullptr;
 				return;
@@ -124,27 +134,31 @@ private:
 		}
 		if (erased->left == nullptr && erased->right != nullptr)
 		{
-			std::shared_ptr<Node<T>> parent = erased->parent.lock();
-			if (!parent)
+			std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+			if (!erased_parent)
 			{
+				std::shared_ptr<Node<T>> new_root = erased->right;
+				root_->right = nullptr;
+				root_ = new_root;
+				erased.reset();
 				return;
 			}
 
-			std::cout << "\nerased->left == nullptr && erased->right != nullptr\n";
+			//std::cout << "\nerased->left == nullptr && erased->right != nullptr\n";
 
-			std::shared_ptr<Node<T>> erased_chaild = erased->left;
-			if (parent->left == erased)
+			std::shared_ptr<Node<T>> erased_chaild = erased->right;
+			if (erased_parent->left == erased)
 			{
-				parent->left = erased_chaild;
-				erased_chaild->parent = parent;
+				erased_parent->left = erased_chaild;
+				erased_chaild->parent = erased_parent;
 				erased->left = nullptr;
 				erased = nullptr;
 				return;
 			}
-			if (parent->right == erased)
+			if (erased_parent->right == erased)
 			{
-				parent->right = erased_chaild;
-				erased_chaild->parent = parent;
+				erased_parent->right = erased_chaild;
+				erased_chaild->parent = erased_parent;
 				erased->right = nullptr;
 				erased = nullptr;
 				return;
@@ -152,10 +166,100 @@ private:
 			throw std::logic_error("Error deleting resource");
 		}
 
-
-
 		if (erased->left != nullptr && erased->right != nullptr)
 		{
+			std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+
+
+
+			std::shared_ptr<Node<T>> erased_chaild_L = erased->left;
+			std::shared_ptr<Node<T>> erased_chaild_R = erased->right;
+
+
+			//std::cout << "\nerased->left != nullptr && erased->right != nullptr\n";
+
+			std::shared_ptr<Node<T>> max = erased->left;
+
+			if (max->right)
+				while (max->right)
+				{
+					max = max->right;
+				}
+
+			if (!erased_parent)
+			{
+				if (max->left == nullptr)
+				{
+					max->right = erased->right;
+					//max->parent = nullptr;
+
+					erased_chaild_R->parent = max;
+
+					root_->left = nullptr;
+					root_->right = nullptr;
+
+					root_ = max;
+
+					return;
+				}
+				if (max->left != nullptr)
+				{
+
+
+				}
+			}
+
+			if (erased_parent->left == erased)
+			{
+
+				if (max->left == nullptr)
+				{
+					max->parent.lock()->right = max->left;
+					erased_chaild_R->parent = max;
+					max->parent = erased_parent;
+					erased_parent->left = max;
+					max->right = erased_chaild_R;
+					return;
+				}
+				if (max->left != nullptr)
+				{
+					max->parent.lock()->right = max->right;
+					erased_chaild_R->parent = max;
+					max->parent = erased_parent;
+					erased_parent->left = max;
+					max->right = erased_chaild_R;
+					return;
+				}
+			}
+
+			if (erased_parent->right == erased)
+			{
+				if (max->left == nullptr)
+				{
+
+					if (max != erased_chaild_L)
+					{
+
+						max->left = erased_chaild_L;
+						erased_chaild_L->parent = max;
+						max->left->right = nullptr;
+					}
+					max->parent = erased_parent;
+					erased_parent->right = max;
+
+					erased_chaild_R->parent = max;
+					max->right = erased_chaild_R;
+					return;
+				}
+				if (max->left != nullptr)
+				{
+					max->parent.lock()->right = max->left;
+					erased_parent->right = max;
+					max->right = erased_chaild_R;
+
+					return;
+				}
+			}
 
 
 		}
@@ -238,7 +342,7 @@ private:
 		}
 	}
 
-	void insertR(std::shared_ptr<Node<T>> currentN, const T& value)
+	static void insertR(std::shared_ptr<Node<T>> currentN, const T& value)
 	{
 		if (value < currentN->data)
 		{
@@ -248,8 +352,8 @@ private:
 			}
 			else
 			{
-				currentN->left = std::make_shared<Node<T>>(value);
-				currentN->left->parent = currentN;
+				std::weak_ptr<Node<T>> weakPtr = currentN;
+				currentN->left = std::make_shared<Node<T>>(value, weakPtr);
 			}
 		}
 		else
@@ -260,8 +364,8 @@ private:
 			}
 			else
 			{
-				currentN->right = std::make_shared<Node<T>>(value);
-				currentN->right->parent = currentN;
+				std::weak_ptr<Node<T>> weakPtr = currentN;
+				currentN->right = std::make_shared<Node<T>>(value, weakPtr);
 			}
 		}
 	}
