@@ -64,217 +64,220 @@ public:
 	}
 
 private:
+	bool erase_no_child(std::shared_ptr<Node<T>>& erased)
+	{
+		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+		if (!erased_parent)
+		{
+			erased.reset();
+			root_.reset();
+			return true;
+		}
+		if (erased_parent->left == erased)
+		{
+			erased_parent->left = nullptr;
+			return true;
+		}
+		if (erased_parent->right == erased)
+		{
+			erased_parent->right = nullptr;
+			return true;
+		}
+		throw std::logic_error("Error deleting resource");
+	}
+	bool erase_L_child(std::shared_ptr<Node<T>>& erased)
+	{
+		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+		if (!erased_parent)
+		{
+			std::shared_ptr<Node<T>> new_root = erased->left;
+			root_->left = nullptr;
+			root_ = new_root;
+			erased.reset();
+			return true;
+		}
+
+		//std::cout << "\nerased->left != nullptr && erased->right == nullptr\n";
+
+		std::shared_ptr<Node<T>> erased_chaild = erased->left;
+		if (erased_parent->left == erased)
+		{
+			erased_parent->left = erased_chaild;
+			erased_chaild->parent = erased_parent;
+			erased->left = nullptr;
+			erased.reset(); //erased = nullptr;
+			return true;
+		}
+		if (erased_parent->right == erased)
+		{
+			erased_parent->right = erased_chaild;
+			erased_chaild->parent = erased_parent;
+			erased->right = nullptr;
+			erased.reset();//erased = nullptr;
+			return true;
+		}
+		throw std::logic_error("Error deleting resource");
+	}
+	bool erase_R_child(std::shared_ptr<Node<T>>& erased)
+	{
+		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+		if (!erased_parent)
+		{
+			std::shared_ptr<Node<T>> new_root = erased->right;
+			root_->right = nullptr;
+			root_ = new_root;
+			erased.reset();
+			return true;
+		}
+
+		//std::cout << "\nerased->left == nullptr && erased->right != nullptr\n";
+
+		std::shared_ptr<Node<T>> erased_chaild = erased->right;
+		if (erased_parent->left == erased)
+		{
+			erased_parent->left = erased_chaild;
+			erased_chaild->parent = erased_parent;
+			erased->left = nullptr;
+			erased.reset(); //erased = nullptr;
+			return true;
+		}
+		if (erased_parent->right == erased)
+		{
+			erased_parent->right = erased_chaild;
+			erased_chaild->parent = erased_parent;
+			erased->right = nullptr;
+			erased.reset(); //erased = nullptr;
+			return true;
+		}
+		throw std::logic_error("Error deleting resource");
+
+	}
+	bool erase_L_and_R_child(std::shared_ptr<Node<T>>& erased)
+	{
+		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+		std::shared_ptr<Node<T>> erased_chaild_L = erased->left;
+		std::shared_ptr<Node<T>> erased_chaild_R = erased->right;
+
+		//std::cout << "\nerased->left != nullptr && erased->right != nullptr\n";
+
+		std::shared_ptr<Node<T>> max = erased->left;
+
+		if (max->right)
+			while (max->right)
+			{
+				max = max->right;
+			}
+
+		if (!max)
+			return false;
+
+		if (!erased_parent)
+		{
+			if (max->left == nullptr)
+			{
+				max->parent.lock()->right = max->left;
+
+				max->left = erased_chaild_L;
+				max->right = erased_chaild_R;
+				erased_chaild_L->parent = max;
+				erased_chaild_R->parent = max;
+
+				root_->left = nullptr;
+				root_->right = nullptr;
+				max->parent = root_->parent;
+				root_ = max;
+				return true;
+			}
+			if (max->left != nullptr)
+			{
+				//throw std::logic_error("Who are you? Where I am?");
+				max->parent.lock()->right = max->right;
+				max->parent.lock()->left = max->left;
+				max->left = erased_chaild_L;
+				max->right = erased_chaild_R;
+				erased_chaild_L->parent = max;
+				erased_chaild_R->parent = max;
+				root_->left = nullptr;
+				root_->right = nullptr;
+				max->parent = root_->parent;
+				root_ = max;
+				return true;
+			}
+		}
+
+		if (erased_parent->left == erased)
+		{
+
+			if (max->left == nullptr)
+			{
+				max->parent.lock()->right = max->left;
+				erased_chaild_R->parent = max;
+				erased_chaild_L->parent = max;
+				max->parent = erased_parent;
+				erased_parent->left = max;
+				max->right = erased_chaild_R;
+				max->left = erased_chaild_L;
+				return true;
+			}
+			if (max->left != nullptr)
+			{
+				max->parent.lock()->right = max->right;
+				erased_chaild_R->parent = max;
+				max->parent = erased_parent;
+				erased_parent->left = max;
+				max->right = erased_chaild_R;
+				return true;
+			}
+		}
+
+		if (erased_parent->right == erased)
+		{
+			if (max->left == nullptr)
+			{
+
+				if (max != erased_chaild_L)
+				{
+
+					max->left = erased_chaild_L;
+					erased_chaild_L->parent = max;
+					max->left->right = nullptr;
+				}
+				max->parent = erased_parent;
+				erased_parent->right = max;
+
+				erased_chaild_R->parent = max;
+				max->right = erased_chaild_R;
+				return true;
+			}
+			if (max->left != nullptr)
+			{
+				max->parent.lock()->right = max->left;
+				erased_parent->right = max;
+				max->right = erased_chaild_R;
+
+				return true;
+			}
+		}
+	}
 
 	bool erase_(const T& value)
 	{
 		std::shared_ptr<Node<T>> erased = find_(value, root_);
+
 		if (!erased)
-		{
 			return false;
-		}
 
 		if (erased->left == nullptr && erased->right == nullptr)
-		{
-			std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
-			if (!erased_parent)
-			{
-				erased.reset();
-				root_.reset();
-				return true;
-			}
-			if (erased_parent->left == erased)
-			{
-				erased_parent->left = nullptr;
-				return true;
-			}
-			if (erased_parent->right == erased)
-			{
-				erased_parent->right = nullptr;
-				return true;
-			}
-			throw std::logic_error("Error deleting resource");
-		}
+			return erase_no_child(erased);
+
 		if (erased->left != nullptr && erased->right == nullptr)
-		{
-			std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
-			if (!erased_parent)
-			{
-				std::shared_ptr<Node<T>> new_root = erased->left;
-				root_->left = nullptr;
-				root_ = new_root;
-				erased.reset();
-				return true;
-			}
+			return erase_L_child(erased);
 
-			//std::cout << "\nerased->left != nullptr && erased->right == nullptr\n";
-
-			std::shared_ptr<Node<T>> erased_chaild = erased->left;
-			if (erased_parent->left == erased)
-			{
-				erased_parent->left = erased_chaild;
-				erased_chaild->parent = erased_parent;
-				erased->left = nullptr;
-				erased = nullptr;
-				return true;
-			}
-			if (erased_parent->right == erased)
-			{
-				erased_parent->right = erased_chaild;
-				erased_chaild->parent = erased_parent;
-				erased->right = nullptr;
-				erased = nullptr;
-				return true;
-			}
-			throw std::logic_error("Error deleting resource");
-		}
 		if (erased->left == nullptr && erased->right != nullptr)
-		{
-			std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
-			if (!erased_parent)
-			{
-				std::shared_ptr<Node<T>> new_root = erased->right;
-				root_->right = nullptr;
-				root_ = new_root;
-				erased.reset();
-				return true;
-			}
-
-			//std::cout << "\nerased->left == nullptr && erased->right != nullptr\n";
-
-			std::shared_ptr<Node<T>> erased_chaild = erased->right;
-			if (erased_parent->left == erased)
-			{
-				erased_parent->left = erased_chaild;
-				erased_chaild->parent = erased_parent;
-				erased->left = nullptr;
-				erased = nullptr;
-				return true;
-			}
-			if (erased_parent->right == erased)
-			{
-				erased_parent->right = erased_chaild;
-				erased_chaild->parent = erased_parent;
-				erased->right = nullptr;
-				erased = nullptr;
-				return true;
-			}
-			throw std::logic_error("Error deleting resource");
-		}
+			return erase_R_child(erased);
 
 		if (erased->left != nullptr && erased->right != nullptr)
-		{
-			std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
-
-
-
-			std::shared_ptr<Node<T>> erased_chaild_L = erased->left;
-			std::shared_ptr<Node<T>> erased_chaild_R = erased->right;
-
-
-			//std::cout << "\nerased->left != nullptr && erased->right != nullptr\n";
-
-			std::shared_ptr<Node<T>> max = erased->left;
-
-			if (max->right)
-				while (max->right)
-				{
-					max = max->right;
-				}
-
-			if (!erased_parent)
-			{
-				if (max->left == nullptr)
-				{
-					max->parent.lock()->right = max->left;
-
-					max->left = erased_chaild_L;
-					max->right = erased_chaild_R;
-					erased_chaild_L->parent = max;
-					erased_chaild_R->parent = max;
-
-					//max->right = erased->right;
-					//max->parent = nullptr;
-					//erased_chaild_R->parent = max;
-
-					root_->left = nullptr;
-					root_->right = nullptr;
-					max->parent = root_->parent;
-					root_ = max;
-					return true;
-				}
-				if (max->left != nullptr)
-				{
-					//throw std::logic_error("Who are you? Where I am?");
-					max->parent.lock()->right = max->right;
-					max->parent.lock()->left = max->left;
-					max->left = erased_chaild_L;
-					max->right = erased_chaild_R;
-					erased_chaild_L->parent = max;
-					erased_chaild_R->parent = max;
-					root_->left = nullptr;
-					root_->right = nullptr;
-					max->parent = root_->parent;
-					root_ = max;
-					return true;
-				}
-			}
-
-			if (erased_parent->left == erased)
-			{
-
-				if (max->left == nullptr)
-				{
-					max->parent.lock()->right = max->left;
-					erased_chaild_R->parent = max;
-					erased_chaild_L->parent = max;
-					max->parent = erased_parent;
-					erased_parent->left = max;
-					max->right = erased_chaild_R;
-					max->left = erased_chaild_L;
-					return true;
-				}
-				if (max->left != nullptr)
-				{
-					max->parent.lock()->right = max->right;
-					erased_chaild_R->parent = max;
-					max->parent = erased_parent;
-					erased_parent->left = max;
-					max->right = erased_chaild_R;
-					return true;
-				}
-			}
-
-			if (erased_parent->right == erased)
-			{
-				if (max->left == nullptr)
-				{
-
-					if (max != erased_chaild_L)
-					{
-
-						max->left = erased_chaild_L;
-						erased_chaild_L->parent = max;
-						max->left->right = nullptr;
-					}
-					max->parent = erased_parent;
-					erased_parent->right = max;
-
-					erased_chaild_R->parent = max;
-					max->right = erased_chaild_R;
-					return true;
-				}
-				if (max->left != nullptr)
-				{
-					max->parent.lock()->right = max->left;
-					erased_parent->right = max;
-					max->right = erased_chaild_R;
-
-					return true;
-				}
-			}
-
-
-		}
+			return erase_L_and_R_child(erased);
 
 	}
 
