@@ -266,7 +266,7 @@ private:
 
 		if (!erased)
 			return false;
-
+		--size_;
 		if (erased->left == nullptr && erased->right == nullptr)
 			return erase_no_child(erased);
 
