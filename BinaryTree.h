@@ -48,34 +48,29 @@ public:
 	{
 		std::shared_ptr<Node<T>> test = find_(value, root_);
 		std::cout << "\n";
-		//if (test == nullptr)
-		//{
-		//	std::cout << "none\n";
-		//	return false;
-		//}
-		std::cout << "\n\n";
-		std::cout << value;
-		std::cout << "\n\n";
-		erase(value);
-		print_in_order();
-		//system("pause");
-
-
-
-
-
+		if (test == nullptr)
+		{
+			std::cout << "none\n";
+			return false;
+		}
 
 		return true;
 	}
 
+	bool erase(const T& value)
+	{
+		std::cout << "\n" << value << "\n";
+		return erase_(value);
+	}
+
 private:
 
-	void erase(const T& value)
+	bool erase_(const T& value)
 	{
 		std::shared_ptr<Node<T>> erased = find_(value, root_);
 		if (!erased)
 		{
-			return;
+			return false;
 		}
 
 		if (erased->left == nullptr && erased->right == nullptr)
@@ -85,17 +80,17 @@ private:
 			{
 				erased.reset();
 				root_.reset();
-				return;
+				return true;
 			}
 			if (erased_parent->left == erased)
 			{
 				erased_parent->left = nullptr;
-				return;
+				return true;
 			}
 			if (erased_parent->right == erased)
 			{
 				erased_parent->right = nullptr;
-				return;
+				return true;
 			}
 			throw std::logic_error("Error deleting resource");
 		}
@@ -108,7 +103,7 @@ private:
 				root_->left = nullptr;
 				root_ = new_root;
 				erased.reset();
-				return;
+				return true;
 			}
 
 			//std::cout << "\nerased->left != nullptr && erased->right == nullptr\n";
@@ -120,7 +115,7 @@ private:
 				erased_chaild->parent = erased_parent;
 				erased->left = nullptr;
 				erased = nullptr;
-				return;
+				return true;
 			}
 			if (erased_parent->right == erased)
 			{
@@ -128,7 +123,7 @@ private:
 				erased_chaild->parent = erased_parent;
 				erased->right = nullptr;
 				erased = nullptr;
-				return;
+				return true;
 			}
 			throw std::logic_error("Error deleting resource");
 		}
@@ -141,7 +136,7 @@ private:
 				root_->right = nullptr;
 				root_ = new_root;
 				erased.reset();
-				return;
+				return true;
 			}
 
 			//std::cout << "\nerased->left == nullptr && erased->right != nullptr\n";
@@ -153,7 +148,7 @@ private:
 				erased_chaild->parent = erased_parent;
 				erased->left = nullptr;
 				erased = nullptr;
-				return;
+				return true;
 			}
 			if (erased_parent->right == erased)
 			{
@@ -161,7 +156,7 @@ private:
 				erased_chaild->parent = erased_parent;
 				erased->right = nullptr;
 				erased = nullptr;
-				return;
+				return true;
 			}
 			throw std::logic_error("Error deleting resource");
 		}
@@ -190,22 +185,37 @@ private:
 			{
 				if (max->left == nullptr)
 				{
-					max->right = erased->right;
-					//max->parent = nullptr;
+					max->parent.lock()->right = max->left;
 
+					max->left = erased_chaild_L;
+					max->right = erased_chaild_R;
+					erased_chaild_L->parent = max;
 					erased_chaild_R->parent = max;
+
+					//max->right = erased->right;
+					//max->parent = nullptr;
+					//erased_chaild_R->parent = max;
 
 					root_->left = nullptr;
 					root_->right = nullptr;
-
+					max->parent = root_->parent;
 					root_ = max;
-
-					return;
+					return true;
 				}
 				if (max->left != nullptr)
 				{
-
-
+					//throw std::logic_error("Who are you? Where I am?");
+					max->parent.lock()->right = max->right;
+					max->parent.lock()->left = max->left;
+					max->left = erased_chaild_L;
+					max->right = erased_chaild_R;
+					erased_chaild_L->parent = max;
+					erased_chaild_R->parent = max;
+					root_->left = nullptr;
+					root_->right = nullptr;
+					max->parent = root_->parent;
+					root_ = max;
+					return true;
 				}
 			}
 
@@ -216,10 +226,12 @@ private:
 				{
 					max->parent.lock()->right = max->left;
 					erased_chaild_R->parent = max;
+					erased_chaild_L->parent = max;
 					max->parent = erased_parent;
 					erased_parent->left = max;
 					max->right = erased_chaild_R;
-					return;
+					max->left = erased_chaild_L;
+					return true;
 				}
 				if (max->left != nullptr)
 				{
@@ -228,7 +240,7 @@ private:
 					max->parent = erased_parent;
 					erased_parent->left = max;
 					max->right = erased_chaild_R;
-					return;
+					return true;
 				}
 			}
 
@@ -249,7 +261,7 @@ private:
 
 					erased_chaild_R->parent = max;
 					max->right = erased_chaild_R;
-					return;
+					return true;
 				}
 				if (max->left != nullptr)
 				{
@@ -257,7 +269,7 @@ private:
 					erased_parent->right = max;
 					max->right = erased_chaild_R;
 
-					return;
+					return true;
 				}
 			}
 

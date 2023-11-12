@@ -4,7 +4,31 @@
 #include <crtdbg.h>
 #include <iostream>
 #include <cassert>
+#include <random>
+#include <ctime> 
 #include "BinaryTree.h"
+
+void fill_randomly(BinaryTree<int>& root, int size = 10)
+{
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(-50, 50);
+
+	for (int i = 0; i < size; ++i)
+	{
+		int random_value = dis(gen);
+		root.insert(random_value);
+	}
+}
+
+int return_randomly()
+{
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(-50, 50);
+
+	return dis(gen);
+}
 
 int main()
 {
@@ -18,47 +42,63 @@ int main()
 		////tree.find(1);
 	}
 	{
-		// Создаем бинарное дерево
-		BinaryTree<int> tree;
-		tree.insert(11);
-		tree.insert(5);
-		tree.insert(20);
-		tree.insert(17);
-		tree.insert(12);
-		tree.insert(19);
-		tree.insert(30);
-		tree.insert(27);
-		tree.insert(35);
-		tree.insert(28);
-		tree.insert(29);
-		tree.insert(0);
-		tree.insert(-1);
-		tree.insert(10);
-		tree.insert(8);
-		tree.insert(7);
-		tree.insert(9);
-		//tree.insert(11);
-		tree.print_in_order();
-		tree.find(8);
-		tree.find(9);
-		tree.find(7);
-		tree.find(5);
-		tree.find(0);
-		tree.find(-1);
+		while (true)
+		{
+			BinaryTree<int> tree;
+			fill_randomly(tree);
+			tree.print_in_order();
+			if (tree.erase(return_randomly()))
+			{
+				tree.print_in_order();
+				system("pause");
+			}
+			else
+			{
+				system("cls");
 
-		tree.find(11);
-
-		tree.find(29);
-		tree.find(28);
-		tree.find(30);
-		tree.find(35);
-		tree.find(20);
-		tree.find(17);
-		tree.find(12);
+			}
+		}
 
 
-		tree.find(10);
-		tree.find(19);
+		//BinaryTree<int> tree;
+
+		//tree.insert(13);
+		//tree.insert(45);
+		//tree.insert(-29);
+		//tree.insert(46);
+		//tree.insert(19);
+		//tree.insert(-14);
+		//tree.insert(-31);
+		//tree.insert(34);
+		//tree.insert(18);
+		//tree.insert(32);
+
+		//tree.print_in_order();
+		//tree.erase(13);
+		//tree.print_in_order();
+
+
+
+		//tree.find(8);
+		//tree.find(9);
+		//tree.find(7);
+		//tree.find(5);
+		//tree.find(0);
+		//tree.find(-1);
+
+		//tree.find(11);
+
+		//tree.find(29);
+		//tree.find(28);
+		//tree.find(30);
+		//tree.find(35);
+		//tree.find(20);
+		//tree.find(17);
+		//tree.find(12);
+
+
+		//tree.find(10);
+		//tree.find(19);
 
 		//// Проверяем поиск
 		//std::shared_ptr<Node<int>> foundNode;
