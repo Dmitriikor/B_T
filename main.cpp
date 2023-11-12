@@ -4,11 +4,12 @@
 #include <crtdbg.h>
 #include <iostream>
 #include <cassert>
+#include <vector>
 #include <random>
 #include <ctime> 
 #include "BinaryTree.h"
 
-void fill_randomly(BinaryTree<int>& root, int size = 10)
+void fill_randomly(BinaryTree<int>& root, std::vector<int>& random, int size = 10)
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -17,17 +18,18 @@ void fill_randomly(BinaryTree<int>& root, int size = 10)
 	for (int i = 0; i < size; ++i)
 	{
 		int random_value = dis(gen);
+		random.push_back(random_value);
 		root.insert(random_value);
 	}
 }
 
-int return_randomly()
+int return_randomly(std::vector<int>& random)
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis(-50, 50);
+	std::uniform_int_distribution<> dis(0, random.size());
 
-	return dis(gen);
+	return random[dis(gen)];
 }
 
 int main()
@@ -44,10 +46,11 @@ int main()
 	{
 		while (true)
 		{
+			std::vector<int> random;
 			BinaryTree<int> tree;
-			fill_randomly(tree);
+			fill_randomly(tree, random);
 			tree.print_in_order();
-			if (tree.erase(return_randomly()))
+			if (tree.erase(return_randomly(random)))
 			{
 				tree.print_in_order();
 				system("pause");
