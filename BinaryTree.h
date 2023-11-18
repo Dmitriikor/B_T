@@ -7,7 +7,6 @@ class BinaryTree
 {
 private:
 	std::shared_ptr<Node<T>> root_;
-	int cntr_ = 0;
 	size_t size_ = 0;
 
 public:
@@ -37,7 +36,7 @@ public:
 
 	void print_in_order()
 	{
-		//print_orderR(root_, cntr_);
+		//print_orderR(root_, 0);
 		std::cout << "\n";
 		print_order_chatGPT(root_);
 		std::cout << "\n";
@@ -64,200 +63,162 @@ public:
 	}
 
 private:
-	bool erase_no_child(std::shared_ptr<Node<T>>& erased)
+	void erase_no_child(std::shared_ptr<Node<T>>& erased)
 	{
 		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+
 		if (!erased_parent)
 		{
-			erased.reset();
+			//erased.reset();
 			root_.reset();
-			return true;
+			return;
 		}
+
 		if (erased_parent->left == erased)
 		{
 			erased_parent->left = nullptr;
-			return true;
+			return;
 		}
+
 		if (erased_parent->right == erased)
 		{
 			erased_parent->right = nullptr;
-			return true;
+			return;
 		}
+
 		throw std::logic_error("Error deleting resource");
 	}
+
 	bool erase_L_child(std::shared_ptr<Node<T>>& erased)
 	{
-		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
-		if (!erased_parent)
+		std::shared_ptr<Node<T>> parent = erased->parent.lock();
+		std::shared_ptr<Node<T>> child = erased->left;
+
+		if (!parent)
 		{
+			/*
 			std::shared_ptr<Node<T>> new_root = erased->left;
 			root_->left = nullptr;
 			root_ = new_root;
 			erased.reset();
+			*/
+			child->parent = root_->parent;
+			root_ = child;
 			return true;
 		}
 
 		//std::cout << "\nerased->left != nullptr && erased->right == nullptr\n";
 
-		std::shared_ptr<Node<T>> erased_chaild = erased->left;
-		if (erased_parent->left == erased)
+		if (erased == parent->left)
 		{
-			erased_parent->left = erased_chaild;
-			erased_chaild->parent = erased_parent;
-			erased->left = nullptr;
-			erased.reset(); //erased = nullptr;
+			parent->left = child;
+			child->parent = parent;
+			//erased->left = nullptr;
+			//erased.reset(); //erased = nullptr;
 			return true;
 		}
-		if (erased_parent->right == erased)
+
+		if (erased == parent->right)
 		{
-			erased_parent->right = erased_chaild;
-			erased_chaild->parent = erased_parent;
-			erased->right = nullptr;
-			erased.reset();//erased = nullptr;
+			parent->right = child;
+			child->parent = parent;
+			//erased->right = nullptr;
+			//erased.reset();//erased = nullptr;
 			return true;
 		}
+
 		throw std::logic_error("Error deleting resource");
 	}
+
 	bool erase_R_child(std::shared_ptr<Node<T>>& erased)
 	{
-		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
-		if (!erased_parent)
+		std::shared_ptr<Node<T>> parent = erased->parent.lock();
+		std::shared_ptr<Node<T>> child = erased->right;
+
+		if (!parent)
 		{
-			std::shared_ptr<Node<T>> new_root = erased->right;
+			/*std::shared_ptr<Node<T>> new_root = erased->right;
 			root_->right = nullptr;
 			root_ = new_root;
-			erased.reset();
+			erased.reset();*/
+			child->parent = root_->parent;
+			root_ = child;
 			return true;
 		}
 
 		//std::cout << "\nerased->left == nullptr && erased->right != nullptr\n";
 
-		std::shared_ptr<Node<T>> erased_chaild = erased->right;
-		if (erased_parent->left == erased)
+		if (erased == parent->left)
 		{
-			erased_parent->left = erased_chaild;
-			erased_chaild->parent = erased_parent;
-			erased->left = nullptr;
-			erased.reset(); //erased = nullptr;
+			parent->left = child;
+			child->parent = parent;
+			//erased->left = nullptr;
+			//erased.reset(); //erased = nullptr;
 			return true;
 		}
-		if (erased_parent->right == erased)
+
+		if (erased == parent->right)
 		{
-			erased_parent->right = erased_chaild;
-			erased_chaild->parent = erased_parent;
-			erased->right = nullptr;
-			erased.reset(); //erased = nullptr;
+			parent->right = child;
+			child->parent = parent;
+			//erased->right = nullptr;
+			//erased.reset(); //erased = nullptr;
 			return true;
 		}
+
 		throw std::logic_error("Error deleting resource");
 
 	}
-	bool erase_L_and_R_child(std::shared_ptr<Node<T>>& erased)
+
+	void erase_L_and_R_child(std::shared_ptr<Node<T>>& erased)
 	{
 		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
-		std::shared_ptr<Node<T>> erased_chaild_L = erased->left;
-		std::shared_ptr<Node<T>> erased_chaild_R = erased->right;
+		std::shared_ptr<Node<T>> erased_child_L = erased->left;
+		std::shared_ptr<Node<T>> erased_child_R = erased->right;
 
 		//std::cout << "\nerased->left != nullptr && erased->right != nullptr\n";
 
 		std::shared_ptr<Node<T>> max = erased->left;
 
-		if (max->right)
-			while (max->right)
-			{
-				max = max->right;
-			}
+		while (max->right)
+		{
+			max = max->right;
+		}
 
 		if (!max)
-			return false;
+			throw std::logic_error("Error deleting resource");
 
-		if (!erased_parent)
+		//если удаляемый и заменяемый не связаны отношением "родитель-левый ребёнок"
+		if (max != erased_child_L)
 		{
-			if (max->left == nullptr)
-			{
-				max->parent.lock()->right = max->left;
+			//разрываем старую связь max с его родителем
+			max->parent.lock()->right = max->left;
 
-				max->left = erased_chaild_L;
-				max->right = erased_chaild_R;
-				erased_chaild_L->parent = max;
-				erased_chaild_R->parent = max;
-
-				root_->left = nullptr;
-				root_->right = nullptr;
-				max->parent = root_->parent;
-				root_ = max;
-				return true;
-			}
 			if (max->left != nullptr)
-			{
-				//throw std::logic_error("Who are you? Where I am?");
-				max->parent.lock()->right = max->right;
-				max->parent.lock()->left = max->left;
-				max->left = erased_chaild_L;
-				max->right = erased_chaild_R;
-				erased_chaild_L->parent = max;
-				erased_chaild_R->parent = max;
-				root_->left = nullptr;
-				root_->right = nullptr;
-				max->parent = root_->parent;
-				root_ = max;
-				return true;
-			}
+				max->left->parent = max->parent;
+
+			//связываем max и его нового левого ребёнка:
+			erased_child_L->parent = max;
+			max->left = erased_child_L;
 		}
 
-		if (erased_parent->left == erased)
-		{
+		//связываем max и его нового правого ребёнка:
+		erased_child_R->parent = max;
+		max->right = erased_child_R;
 
-			if (max->left == nullptr)
-			{
-				max->parent.lock()->right = max->left;
-				erased_chaild_R->parent = max;
-				erased_chaild_L->parent = max;
-				max->parent = erased_parent;
+		//направляем max на нового родителя
+		max->parent = erased_parent; //?? error
+
+		//если родитель есть, то направляем его на max
+		if (erased_parent != nullptr)
+		{
+			if (erased == erased_parent->left)
 				erased_parent->left = max;
-				max->right = erased_chaild_R;
-				max->left = erased_chaild_L;
-				return true;
-			}
-			if (max->left != nullptr)
-			{
-				max->parent.lock()->right = max->right;
-				erased_chaild_R->parent = max;
-				max->parent = erased_parent;
-				erased_parent->left = max;
-				max->right = erased_chaild_R;
-				return true;
-			}
-		}
-
-		if (erased_parent->right == erased)
-		{
-			if (max->left == nullptr)
-			{
-
-				if (max != erased_chaild_L)
-				{
-
-					max->left = erased_chaild_L;
-					erased_chaild_L->parent = max;
-					max->left->right = nullptr;
-				}
-				max->parent = erased_parent;
+			else
 				erased_parent->right = max;
-
-				erased_chaild_R->parent = max;
-				max->right = erased_chaild_R;
-				return true;
-			}
-			if (max->left != nullptr)
-			{
-				max->parent.lock()->right = max->left;
-				erased_parent->right = max;
-				max->right = erased_chaild_R;
-
-				return true;
-			}
 		}
+		else
+			root_ = max;
 	}
 
 	bool erase_(const T& value)
@@ -266,22 +227,23 @@ private:
 
 		if (!erased)
 			return false;
+
 		--size_;
+
 		if (erased->left == nullptr && erased->right == nullptr)
-			return erase_no_child(erased);
+			erase_no_child(erased);
+		else if (erased->left != nullptr && erased->right == nullptr)
+			erase_L_child(erased);
+		else if (erased->left == nullptr && erased->right != nullptr)
+			erase_R_child(erased);
+		else
+		//if (erased->left != nullptr && erased->right != nullptr)
+		erase_L_and_R_child(erased);
 
-		if (erased->left != nullptr && erased->right == nullptr)
-			return erase_L_child(erased);
-
-		if (erased->left == nullptr && erased->right != nullptr)
-			return erase_R_child(erased);
-
-		if (erased->left != nullptr && erased->right != nullptr)
-			return erase_L_and_R_child(erased);
-
+		return true;
 	}
 
-	std::shared_ptr<Node<T>> find_(T val, std::shared_ptr<Node<T>> currentN)
+	std::shared_ptr<Node<T>> find_(const T& val, std::shared_ptr<Node<T>> currentN)
 	{
 		while (currentN)
 		{
@@ -289,17 +251,14 @@ private:
 			{
 				return currentN;
 			}
+
 			if (currentN->data > val)
 			{
 				currentN = currentN->left;
+				continue;
 			}
-			if (currentN == nullptr)
-				break;
-			if (currentN->data == val)
-			{
-				return currentN;
-			}
-			if (currentN->data < val)
+
+			//if (currentN->data < val)
 			{
 				currentN = currentN->right;
 			}
@@ -326,7 +285,7 @@ private:
 	//	}
 	//}
 
-//}
+	//}
 
 
 
