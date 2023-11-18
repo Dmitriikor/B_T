@@ -1,26 +1,6 @@
 {
-"makefile.configurations": [
 
-    {
 
-        "name": "MyConfiguration",
-
-        "problemMatchers": [
-
-            "$msCompile"
-
-        ],
-
-        "makeArgs": [                
-        "/Zi",
-        "/EHsc",
-        "/nologo",
-        "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
-        "${workspaceFolder}/*.cpp"
-    ]
-
-    },
-
-],
-"files.autoSave": "afterDelay"
+"files.autoSave": "afterDelay",
+"sonarlint.pathToCompileCommands": "${workspaceFolder}\\compile_commands.json"
 }
