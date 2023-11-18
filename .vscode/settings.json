@@ -1,0 +1,26 @@
+{
+"makefile.configurations": [
+
+    {
+
+        "name": "MyConfiguration",
+
+        "problemMatchers": [
+
+            "$msCompile"
+
+        ],
+
+        "makeArgs": [                
+        "/Zi",
+        "/EHsc",
+        "/nologo",
+        "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
+        "${workspaceFolder}/*.cpp"
+    ]
+
+    },
+
+],
+"files.autoSave": "afterDelay"
+}
