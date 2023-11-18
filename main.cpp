@@ -27,9 +27,21 @@ int return_randomly(std::vector<int>& random)
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis(0, random.size() - 1);
+
+	std::uniform_int_distribution<> dis(0, (int)random.size() - (1));
 
 	return random[dis(gen)];
+}
+
+int min(std::vector<int>& random)
+{
+	auto min = std::min_element(random.begin(), random.end());
+	return *min;
+}
+int max(std::vector<int>& random)
+{
+	auto max = std::max_element(random.begin(), random.end());
+	return *max;
 }
 
 int main()
@@ -47,18 +59,29 @@ int main()
 		while (true)
 		{
 			std::vector<int> random;
+			std::vector<int> random2;
 			BinaryTree<int> tree;
 			fill_randomly(tree, random);
 			tree.print_in_order();
+
+			//std::cout <<"\n"<< min(random) << " / "	<< tree.min() << "\n";
+			assert(min(random) == tree.min());
+
+			assert(max(random) == tree.max());
 			if (tree.erase(return_randomly(random)))
 			{
+				tree.to_vector(random2);
+				std::cout <<"\n"<< random.size() << " / "	<< random2.size() << "\n";
+				assert(random.size()-1 == random2.size());
+
+
 				tree.print_in_order();
 				system("pause");
+				system("cls");
 			}
 			else
 			{
-				system("cls");
-
+				return -1;
 			}
 		}
 

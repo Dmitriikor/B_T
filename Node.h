@@ -13,7 +13,7 @@ struct Node
 
 
 
-	Node(const T& value) : data(value)/*, prev(this)*/
+	explicit Node(const T& value) : data(value)/*, prev(this)*/
 	{
 
 	}
