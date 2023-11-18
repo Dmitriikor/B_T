@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
-#include <random>
+#include <random> 
 #include <ctime> 
 #include "BinaryTree.h"
 
@@ -27,13 +27,17 @@ int return_randomly(std::vector<int>& random)
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis(0, random.size());
+	std::uniform_int_distribution<> dis(0, random.size()-1);
 
 	return random[dis(gen)];
 }
 
 int main()
 {
+	std::cout << "Hello World!\n";
+	//system("cls");
+	//system("pause");
+
 	{
 		//BinaryTree<int> tree;
 		//tree.print();
@@ -103,7 +107,7 @@ int main()
 		//tree.find(10);
 		//tree.find(19);
 
-		//// Проверяем поиск
+		//// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		//std::shared_ptr<Node<int>> foundNode;
 		//foundNode = tree.find(5);
 		//assert(foundNode != nullptr);
