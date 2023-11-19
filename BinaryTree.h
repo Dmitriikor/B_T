@@ -172,7 +172,7 @@ private:
 	//	}
 	//	if (currentN->data < val)
 	//	{
-	//		if (currentN->right == nullptr /*&& val > currentN->data*/)
+	//		if (currentN->right == nullptr //&& val > currentN->data*/)
 	//			return currentN;
 	//		findR(currentN->right, val);
 
