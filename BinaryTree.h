@@ -112,11 +112,17 @@ private:
 			friend class BinaryTree;
 
 		public:
+			using value_type = T;
+			using difference_type = std::ptrdiff_t;
+			using pointer = T*;
+			using reference = T&;
+			using iterator_category = std::forward_iterator_tag;
+
 			explicit iterator(std::shared_ptr<Node<T>> currentN): currentN(min_(currentN))
 			{
 			}
 
-			T& operator*()
+			reference operator*()
 			{
 				return currentN->data;
 			}
@@ -147,7 +153,7 @@ private:
 			{
        			 return currentN != nullptr;
 			}
-			iterator& end_is() const 
+			iterator end_is() const 
 			{
        			 return max_(root_);
 			}
