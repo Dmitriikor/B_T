@@ -282,7 +282,6 @@ private:
 
 	iterator end() 
 	{
-		
 		return iterator(nullptr);
 	}
 
