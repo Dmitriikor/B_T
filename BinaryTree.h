@@ -1,7 +1,7 @@
 #include "Node.h"
 #include <iomanip>
 #include <exception>
-
+#include <iterator> 
 
 template <typename U>
 class no_L_ñhildren
@@ -29,7 +29,7 @@ class BinaryTree
 private:
 	std::shared_ptr<Node<T>> root_;
 	size_t size_ = 0;
-
+	friend class iterator;
 public:
 	BinaryTree() : root_(nullptr) {}
 
@@ -108,8 +108,56 @@ public:
 
 
 
-
 private:
+	class iterator : public std::iterator<std::forward_iterator_tag, T>
+	{
+		private:
+			std::shared_ptr<Node<T>> currentN;
+			friend class BinaryTree;
+
+		public:
+			explicit iterator(std::shared_ptr<Node<T>> currentN): currentN(min_(currentN))
+			{
+			}
+
+			T& operator*()
+			{
+				return currentN->data;
+			}
+
+			iterator& operator++() 
+			{
+				if (currentN->right != nullptr) 
+				{
+					currentN = min_(currentN->right);
+				} 
+				else 
+				{
+					while (currentN->parent.lock() != nullptr && currentN->parent.lock()->right == currentN) 
+					{
+						currentN = currentN->parent.lock();
+					}
+					currentN = currentN->parent.lock();
+				}
+				return *this;
+			}
+
+			bool operator!=(const iterator& other) const 
+			{
+            	return currentN != other.currentN;
+       		}
+			
+			bool next_is() const 
+			{
+       			 return currentN != nullptr;
+			}
+			iterator& end_is() const 
+			{
+       			 return max_(root_);
+			}
+    };
+
+
 
 	bool erase_(const T& value)
 	{
@@ -237,7 +285,33 @@ private:
 				currentN->right = std::make_shared<Node<T>>(value, weakPtr);
 			}
 		}
+
+
 	}
+		std::shared_ptr<Node<T>> max_ (std::shared_ptr<Node<T>> currentN)
+		{
+			if(!currentN)
+				return nullptr;
+			
+			while(currentN->right)
+			{
+				currentN = currentN->right;
+			}
+			return currentN;
+		}
+	public:
+	iterator begin() 
+	{
+        return iterator(root_);
+    }
+
+	iterator end() 
+	{
+		
+		return iterator(nullptr);
+	}
+
+
 };
 
 template <typename T>
@@ -431,19 +505,19 @@ template <typename T>
 
 	}
 
-	template <typename T>
-	std::shared_ptr<Node<T>> max_ (std::shared_ptr<Node<T>> currentN)
-	{
-		if(!currentN)
-			return nullptr;
+	// template <typename T>
+	// std::shared_ptr<Node<T>> max_ (std::shared_ptr<Node<T>> currentN)
+	// {
+	// 	if(!currentN)
+	// 		return nullptr;
 	
-		while(currentN->right)
-		{
-			currentN = currentN->right;
-		}
-		return currentN;
+	// 	while(currentN->right)
+	// 	{
+	// 		currentN = currentN->right;
+	// 	}
+	// 	return currentN;
 
-	}
+	// }
 	template <typename T>
 	void to_vector_(std::vector<T>& accum, std::shared_ptr<Node<T>> currentN)
 	{
@@ -454,3 +528,4 @@ template <typename T>
 			to_vector_(accum, currentN->right);
 		}
 	}
+	//template <typename T>

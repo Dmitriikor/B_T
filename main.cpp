@@ -76,7 +76,15 @@ int main()
 
 
 				tree.print_in_order();
+				tree.print();
+				std::cout << "\n";
+				for (auto it = tree.begin(); it != tree.end(); ++it)
+				{
+					std::cout << "\\"<< *it ;
+				}
+				std::cout << "\n";
 				system("pause");
+				
 				system("cls");
 			}
 			else
