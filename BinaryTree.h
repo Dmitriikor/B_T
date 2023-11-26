@@ -99,15 +99,11 @@ public:
 		return max_(root_)->data;
 	}
 
-
 	void to_vector(std::vector<T>& accum)
 	{
 		to_vector_(accum, root_);
 	}
 	
-
-
-
 private:
 	class iterator : public std::iterator<std::forward_iterator_tag, T>
 	{
@@ -157,8 +153,6 @@ private:
 			}
     };
 
-
-
 	bool erase_(const T& value)
 	{
 		std::shared_ptr<Node<T>> erased = find_(value, root_);
@@ -204,10 +198,6 @@ private:
 		return nullptr;
 	}
 
-
-
-
-
 	//if (currentN)
 	//{
 	//	std::cout << currentN->data;
@@ -215,7 +205,6 @@ private:
 	//	{
 	//		if (currentN->left == nullptr)
 	//			return currentN;
-
 	//		findR(currentN->left, val);
 	//	}
 	//	if (currentN->data < val)
@@ -223,13 +212,9 @@ private:
 	//		if (currentN->right == nullptr //&& val > currentN->data*/)
 	//			return currentN;
 	//		findR(currentN->right, val);
-
 	//	}
 	//}
-
 	//}
-
-
 
 	static void print_orderR(std::shared_ptr<Node<T>> currentN, int counter)
 	{
@@ -288,17 +273,7 @@ private:
 
 
 	}
-		std::shared_ptr<Node<T>> max_ (std::shared_ptr<Node<T>> currentN)
-		{
-			if(!currentN)
-				return nullptr;
-			
-			while(currentN->right)
-			{
-				currentN = currentN->right;
-			}
-			return currentN;
-		}
+
 	public:
 	iterator begin() 
 	{
@@ -505,19 +480,19 @@ template <typename T>
 
 	}
 
-	// template <typename T>
-	// std::shared_ptr<Node<T>> max_ (std::shared_ptr<Node<T>> currentN)
-	// {
-	// 	if(!currentN)
-	// 		return nullptr;
+	template <typename T>
+	std::shared_ptr<Node<T>> max_ (std::shared_ptr<Node<T>> currentN)
+	{
+		if(!currentN)
+			return nullptr;
 	
-	// 	while(currentN->right)
-	// 	{
-	// 		currentN = currentN->right;
-	// 	}
-	// 	return currentN;
+		while(currentN->right)
+		{
+			currentN = currentN->right;
+		}
+		return currentN;
 
-	// }
+	}
 	template <typename T>
 	void to_vector_(std::vector<T>& accum, std::shared_ptr<Node<T>> currentN)
 	{
