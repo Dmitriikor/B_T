@@ -244,7 +244,7 @@ private:
 		if (currentN)
 		{
 			print(currentN->left);
-			std::cout << currentN->data << " ";
+			std::cout << currentN->data << "\\";
 			print(currentN->right);
 		}
 	}
