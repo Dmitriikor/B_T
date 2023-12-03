@@ -53,7 +53,7 @@ public:
 
 	void print()
 	{
-		print(root_);
+		print_(root_);
 	}
 
 	void print_in_order()
@@ -87,7 +87,7 @@ public:
 	T min()
 	{
 		if (!root_)
-			throw 1; //TODO
+			throw std::runtime_error("Root is nullptr");
 
 		return min_(root_)->data;
 
@@ -102,7 +102,7 @@ public:
 	T max()
 	{
 		if (!root_)
-			throw 1; //TODO
+			throw std::runtime_error("Root is nullptr");
 
 		return max_(root_)->data;
 	}
@@ -118,7 +118,8 @@ private:
 	private:
 		std::shared_ptr<Node<T>> currentN;
 		friend class BinaryTree;
-
+		bool is_first_m = true;
+		bool is_first_l = true;
 	public:
 		using value_type = T;
 		using difference_type = std::ptrdiff_t;
@@ -138,7 +139,7 @@ private:
 		iterator& operator++()
 		{
 			if (currentN == nullptr)
-				throw 1; //TODO replace the exception-object
+				throw std::runtime_error("currentN is nullptr");
 
 			if (currentN->right != nullptr)
 			{
@@ -155,6 +156,23 @@ private:
 
 			return *this;
 		}
+
+	iterator& operator--() 
+	{
+		if (currentN == nullptr)
+			throw std::runtime_error("currentN is nullptr");
+		
+		if (is_first_m && currentN->parent.lock() != nullptr) 
+		{
+			while (currentN->parent.lock() != nullptr)
+			{
+				currentN = currentN->parent.lock();
+			}
+			is_first_m = false;
+		}
+
+		return *this;
+	}
 
 		bool operator!=(const iterator& other) const
 		{
@@ -205,6 +223,7 @@ private:
 				currentN = currentN->right;
 			}
 		}
+
 		return nullptr;
 	}
 
@@ -243,13 +262,13 @@ private:
 	}
 
 
-	void print(std::shared_ptr<Node<T>> currentN)
+	void print_(std::shared_ptr<Node<T>> currentN)
 	{
 		if (currentN)
 		{
-			print(currentN->left);
+			print_(currentN->left);
 			std::cout << currentN->data << "\\";
-			print(currentN->right);
+			print_(currentN->right);
 		}
 	}
 
@@ -283,6 +302,88 @@ private:
 
 
 	}
+	public:
+		void right_rotate(const T& value)
+		{
+			right_rotate_(find_(value, root_));
+		}
+		void left_rotate(const T& value)
+		{
+			left_rotate_(find_(value, root_));
+		}
+		void check()
+		{
+			print__(root_);
+		}
+
+		void print__(std::shared_ptr<Node<T>> currentN)
+		{
+			if (currentN)
+			{
+				print__(currentN->left);
+
+				if(currentN != root_ && currentN->parent.lock() == nullptr)
+					std::cout << currentN->data << "\\";
+
+				print__(currentN->right);
+			}
+		}
+
+	private:
+	    void left_rotate_(std::shared_ptr<Node<T>>& currentN) 
+		{
+			std::shared_ptr<Node<T>> y = currentN->right;
+			
+			currentN->right = y->left;
+
+			if (y->left != nullptr) 
+			{
+				y->left->parent.lock() = currentN;
+			}
+
+			y->parent.lock() = currentN->parent.lock();
+			
+			if (currentN->parent.lock() == nullptr) 
+			{
+				root_ = y;
+			} 
+			else if (currentN == currentN->parent.lock()->left) 
+			{
+				currentN->parent.lock()->left = y;
+			} 
+			else 
+			{
+				currentN->parent.lock()->right = y;
+			}
+			y->left = currentN;
+			currentN->parent.lock() = y;
+   	 	}
+
+	    void right_rotate_(std::shared_ptr<Node<T>>& currentN) 
+		{
+			std::shared_ptr<Node<T>> x = currentN->left;
+
+			currentN->left = x->right;
+			if (x->right != nullptr) 
+			{
+				x->right->parent.lock() = currentN;
+			}
+			x->parent = currentN->parent;
+			if (currentN->parent.lock() == nullptr) 
+			{
+				root_ = x;
+			} 
+			else if (currentN == currentN->parent.lock()->left) 
+			{
+				currentN->parent.lock()->left = x;
+			} 
+			else 
+			{
+				currentN->parent.lock()->right = x;
+			}
+			x->right = currentN;
+			currentN->parent.lock() = x;
+    	}
 
 public:
 	iterator begin()

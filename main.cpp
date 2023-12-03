@@ -82,10 +82,54 @@ int main()
 				{
 					std::cout << "\\"<< *it ;
 				}
+				// std::cout << "\n";
+				// for (auto it = tree.begin(); it != tree.end(); --it)
+				// {
+				// 	std::cout << "/"<< *it ;
+				// }
 				std::cout << "\n";
 				system("pause");
 				
 				system("cls");
+				BinaryTree<int> treeLRT;
+				treeLRT.insert(1);
+				treeLRT.insert(2);
+				treeLRT.insert(3);
+				treeLRT.print_in_order();
+				std::cout << "\n";
+				treeLRT.left_rotate(2);
+				treeLRT.print_in_order();
+
+std::cout << "\n";
+std::cout << "\n";
+
+				BinaryTree<int> treeRRT;
+				treeRRT.insert(3);
+				treeRRT.insert(2);
+				treeRRT.insert(1);
+				treeRRT.print_in_order();
+				std::cout << "\n";
+				treeRRT.right_rotate(2);
+				treeRRT.print_in_order();
+
+				std::cout << "\n";
+				system("pause");
+
+				std::cout << "\n";
+				tree.print_in_order();
+
+				tree.check();
+
+				std::cout << "\n" << random2[5] << "\n";
+				tree.left_rotate(random2[5]);
+				tree.print_in_order();
+
+				std::cout << "\n" << random2[7] << "\n";
+				tree.right_rotate(random2[7]);
+				tree.print_in_order();
+
+
+				system("pause");
 			}
 			else
 			{
