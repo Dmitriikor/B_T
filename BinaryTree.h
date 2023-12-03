@@ -30,6 +30,10 @@ class BinaryTree
 private:
 	std::shared_ptr<Node<T>> root_;
 	size_t size_ = 0;
+
+	int left_height  = 0;
+	int right_height = 0;
+
 	friend class iterator;
 public:
 	BinaryTree() : root_(nullptr) {}
@@ -332,7 +336,13 @@ private:
 
 		int height_of_binary_tree()
 		{
-			return height_of_binary_tree_(root_);
+			int test = height_of_binary_tree_(root_);
+			//min__(root_, left_height);
+			//max__(root_, right_height);
+			int max = std::max(left_height, right_height);
+			//assert(test == max+1);
+
+			return test;
 		}	
 
 		int height_of_binary_tree_(std::shared_ptr<Node<T>>& currentN) 
@@ -343,8 +353,8 @@ private:
 			} 
 			else
 			{
-				int left_height = height_of_binary_tree_(currentN->left);
-				int right_height = height_of_binary_tree_(currentN->right);
+				size_t left_height = height_of_binary_tree_(currentN->left);
+				size_t right_height = height_of_binary_tree_(currentN->right);
 				return std::max(left_height, right_height) + 1;
 			}
 		}
@@ -352,6 +362,11 @@ private:
 	private:
 	    void left_rotate_(std::shared_ptr<Node<T>>& currentN) 
 		{
+			if(currentN->right == nullptr || currentN->right->right == nullptr) 
+			{
+				return;
+			}
+
 			std::shared_ptr<Node<T>> y = currentN->right;
 			
 			currentN->right = y->left;
@@ -382,6 +397,12 @@ private:
 
 	    void right_rotate_(std::shared_ptr<Node<T>>& currentN) 
 		{
+			if(currentN->left == nullptr || currentN->left->left == nullptr) 
+			{
+				return;
+			}
+
+
 			std::shared_ptr<Node<T>> x = currentN->left;
 
 			currentN->left = x->right;
@@ -601,22 +622,27 @@ void erase_L_and_R_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<
 	else
 		root_ = max;
 }
-template <typename T>
-std::shared_ptr<Node<T>> min_(std::shared_ptr<Node<T>> currentN)
-{
-	//if (!currentN)
-		//return nullptr;
 
+template <typename T>
+std::shared_ptr<Node<T>> min__(std::shared_ptr<Node<T>> currentN, int& left_height)
+{
 	while (currentN->left)
 	{
 		currentN = currentN->left;
+		++left_height;
 	}
 	return currentN;
-
+}
+template <typename T>
+std::shared_ptr<Node<T>> min_(std::shared_ptr<Node<T>> currentN)
+{
+	int dd=0;
+	return min__(currentN, dd);
 }
 
+
 template <typename T>
-std::shared_ptr<Node<T>> max_(std::shared_ptr<Node<T>> currentN)
+std::shared_ptr<Node<T>> max__(std::shared_ptr<Node<T>> currentN, int& right_height = 0)
 {
 	if (!currentN)
 		return nullptr;
@@ -624,9 +650,15 @@ std::shared_ptr<Node<T>> max_(std::shared_ptr<Node<T>> currentN)
 	while (currentN->right)
 	{
 		currentN = currentN->right;
+		++right_height;
 	}
 	return currentN;
-
+}
+template <typename T>
+std::shared_ptr<Node<T>> max_(std::shared_ptr<Node<T>> currentN)
+{
+	int dd =0;
+	return max__(currentN, dd);
 }
 template <typename T>
 void to_vector_(std::vector<T>& accum, std::shared_ptr<Node<T>> currentN)

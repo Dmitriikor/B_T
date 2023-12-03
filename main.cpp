@@ -127,7 +127,7 @@ std::cout << "\n";
 				std::cout << "\n" << random2[7] << "\n";
 				tree.right_rotate(random2[7]);
 				tree.print_in_order();
-				std::cout << "\n" << tree.height_of_binary_tree()<< "\n";;
+				std::cout << "\n" << tree.height_of_binary_tree()<< "\n";
 
 				system("pause");
 			}
