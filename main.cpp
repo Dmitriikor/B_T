@@ -97,7 +97,7 @@ int main()
 				treeLRT.insert(3);
 				treeLRT.print_in_order();
 				std::cout << "\n";
-				treeLRT.left_rotate(2);
+				treeLRT.left_rotate(1);
 				treeLRT.print_in_order();
 
 std::cout << "\n";
@@ -109,7 +109,7 @@ std::cout << "\n";
 				treeRRT.insert(1);
 				treeRRT.print_in_order();
 				std::cout << "\n";
-				treeRRT.right_rotate(2);
+				treeRRT.right_rotate(3);
 				treeRRT.print_in_order();
 
 				std::cout << "\n";
@@ -127,7 +127,7 @@ std::cout << "\n";
 				std::cout << "\n" << random2[7] << "\n";
 				tree.right_rotate(random2[7]);
 				tree.print_in_order();
-
+				std::cout << "\n" << tree.height_of_binary_tree()<< "\n";;
 
 				system("pause");
 			}

@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <exception>
 #include <iterator> 
+#include <algorithm>
 
 template <typename U>
 class no_L_ñhildren
@@ -326,6 +327,24 @@ private:
 					std::cout << currentN->data << "\\";
 
 				print__(currentN->right);
+			}
+		}
+		int height_of_binary_tree()
+		{
+			return height_of_binary_tree_(root_);
+		}	
+
+		int height_of_binary_tree_(std::shared_ptr<Node<T>> currentN) 
+		{
+			if (!currentN) 
+			{
+				return 0;
+			} 
+			else
+			{
+				int left_height = height_of_binary_tree_(currentN->left);
+				int right_height = height_of_binary_tree_(currentN->right);
+				return std::max(left_height, right_height) + 1;
 			}
 		}
 
