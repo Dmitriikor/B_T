@@ -163,13 +163,13 @@ private:
 		if (currentN == nullptr)
 			throw std::runtime_error("currentN is nullptr");
 		
-		if (is_first_m && currentN->parent.lock() != nullptr) 
+		if (currentN->left != nullptr)
 		{
-			while (currentN->parent.lock() != nullptr)
-			{
-				currentN = currentN->parent.lock();
-			}
-			is_first_m = false;
+			currentN = currentN->left;
+		}
+		else
+		{
+			currentN = currentN->parent.lock()->right;
 		}
 
 		return *this;
@@ -314,27 +314,28 @@ private:
 		}
 		void check()
 		{
-			print__(root_);
+			check__(root_);
 		}
 
-		void print__(std::shared_ptr<Node<T>> currentN)
+		void check__(std::shared_ptr<Node<T>> currentN)
 		{
 			if (currentN)
 			{
-				print__(currentN->left);
+				check__(currentN->left);
 
 				if(currentN != root_ && currentN->parent.lock() == nullptr)
 					std::cout << currentN->data << "\\";
 
-				print__(currentN->right);
+				check__(currentN->right);
 			}
 		}
+
 		int height_of_binary_tree()
 		{
 			return height_of_binary_tree_(root_);
 		}	
 
-		int height_of_binary_tree_(std::shared_ptr<Node<T>> currentN) 
+		int height_of_binary_tree_(std::shared_ptr<Node<T>>& currentN) 
 		{
 			if (!currentN) 
 			{
@@ -374,6 +375,7 @@ private:
 			{
 				currentN->parent.lock()->right = y;
 			}
+
 			y->left = currentN;
 			currentN->parent.lock() = y;
    	 	}
@@ -383,11 +385,14 @@ private:
 			std::shared_ptr<Node<T>> x = currentN->left;
 
 			currentN->left = x->right;
+
 			if (x->right != nullptr) 
 			{
 				x->right->parent.lock() = currentN;
 			}
+
 			x->parent = currentN->parent;
+
 			if (currentN->parent.lock() == nullptr) 
 			{
 				root_ = x;
@@ -400,6 +405,7 @@ private:
 			{
 				currentN->parent.lock()->right = x;
 			}
+
 			x->right = currentN;
 			currentN->parent.lock() = x;
     	}
