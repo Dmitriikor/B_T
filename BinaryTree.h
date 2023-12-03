@@ -7,20 +7,20 @@ template <typename U>
 class no_L_сhildren
 {
 public:
-    bool operator()(const std::shared_ptr<Node<U>> node) const 
+	bool operator()(const std::shared_ptr<Node<U>> node) const
 	{
-        return (node->left == nullptr);
-    }
+		return (node->left == nullptr);
+	}
 };
 
 template <typename U>
 class no_R_сhildren
 {
 public:
-    bool operator()(const std::shared_ptr<Node<U>> node) const 
+	bool operator()(const std::shared_ptr<Node<U>> node) const
 	{
-        return (node->right == nullptr);
-    }
+		return (node->right == nullptr);
+	}
 };
 
 template <typename T>
@@ -86,15 +86,23 @@ public:
 
 	T min()
 	{
-		if(!root_)
-			return NULL; // trow
+		if (!root_)
+			throw 1; //TODO
 
 		return min_(root_)->data;
+
+		//std::shared_ptr<Node<T>> result = min_(root_);
+
+		//if (!result)
+		//	return NULL; // trow
+
+		//return result->data;
 	}
+
 	T max()
 	{
-		if(!root_)
-			return NULL; // trow
+		if (!root_)
+			throw 1; //TODO
 
 		return max_(root_)->data;
 	}
@@ -103,61 +111,57 @@ public:
 	{
 		to_vector_(accum, root_);
 	}
-	
+
 private:
 	class iterator : public std::iterator<std::forward_iterator_tag, T>
 	{
-		private:
-			std::shared_ptr<Node<T>> currentN;
-			friend class BinaryTree;
+	private:
+		std::shared_ptr<Node<T>> currentN;
+		friend class BinaryTree;
 
-		public:
-			using value_type = T;
-			using difference_type = std::ptrdiff_t;
-			using pointer = T*;
-			using reference = T&;
-			using iterator_category = std::forward_iterator_tag;
+	public:
+		using value_type = T;
+		using difference_type = std::ptrdiff_t;
+		using pointer = T*;
+		using reference = T&;
+		using iterator_category = std::forward_iterator_tag;
 
-			explicit iterator(std::shared_ptr<Node<T>> currentN): currentN(min_(currentN))
+		explicit iterator(std::shared_ptr<Node<T>> currentN) : currentN(currentN)
+		{
+		}
+
+		reference operator*()
+		{
+			return currentN->data;
+		}
+
+		iterator& operator++()
+		{
+			if (currentN == nullptr)
+				throw 1; //TODO replace the exception-object
+
+			if (currentN->right != nullptr)
 			{
+				currentN = min_(currentN->right);
 			}
-
-			reference operator*()
+			else
 			{
-				return currentN->data;
-			}
-
-			iterator& operator++() 
-			{
-				if (currentN->right != nullptr) 
+				while (currentN->parent.lock() != nullptr && currentN->parent.lock()->right == currentN)
 				{
-					currentN = min_(currentN->right);
-				} 
-				else 
-				{
-					while (currentN->parent.lock() != nullptr && currentN->parent.lock()->right == currentN) 
-					{
-						currentN = currentN->parent.lock();
-					}
 					currentN = currentN->parent.lock();
 				}
-				return *this;
+				currentN = currentN->parent.lock();
 			}
 
-			bool operator!=(const iterator& other) const 
-			{
-            	return currentN != other.currentN;
-       		}
-			
-			bool next_is() const 
-			{
-       			 return currentN != nullptr;
-			}
-			iterator end_is() const 
-			{
-       			 return max_(root_);
-			}
-    };
+			return *this;
+		}
+
+		bool operator!=(const iterator& other) const
+		{
+			return currentN != other.currentN;
+		}
+
+	};
 
 	bool erase_(const T& value)
 	{
@@ -175,8 +179,8 @@ private:
 		else if (erased->left == nullptr && erased->right != nullptr)
 			erase_R_child(erased, root_);
 		else
-		//if (erased->left != nullptr && erased->right != nullptr)
-		erase_L_and_R_child(erased, root_);
+			//if (erased->left != nullptr && erased->right != nullptr)
+			erase_L_and_R_child(erased, root_);
 
 		return true;
 	}
@@ -280,13 +284,13 @@ private:
 
 	}
 
-	public:
-	iterator begin() 
+public:
+	iterator begin()
 	{
-        return iterator(root_);
-    }
+		return iterator(min_(root_));
+	}
 
-	iterator end() 
+	iterator end()
 	{
 		return iterator(nullptr);
 	}
@@ -314,198 +318,198 @@ void print_order_chatGPT(std::shared_ptr<Node<T>> const currentN, int level = 0)
 }
 
 template <typename T>
-	void erase_no_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
+void erase_no_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
+{
+	std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+
+	if (!erased_parent)
 	{
-		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
-
-		if (!erased_parent)
-		{
-			//erased.reset();
-			root_.reset();
-			return;
-		}
-
-		if (erased_parent->left == erased)
-		{
-			erased_parent->left = nullptr;
-			return;
-		}
-
-		if (erased_parent->right == erased)
-		{
-			erased_parent->right = nullptr;
-			return;
-		}
-
-		throw std::logic_error("Error deleting resource");
+		//erased.reset();
+		root_.reset();
+		return;
 	}
-template <typename T>
-	bool erase_L_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
+
+	if (erased_parent->left == erased)
 	{
-		std::shared_ptr<Node<T>> parent = erased->parent.lock();
-		std::shared_ptr<Node<T>> child = erased->left;
-
-		if (!parent)
-		{
-			/*
-			std::shared_ptr<Node<T>> new_root = erased->left;
-			root_->left = nullptr;
-			root_ = new_root;
-			erased.reset();
-			*/
-			child->parent = root_->parent;
-			root_ = child;
-			return true;
-		}
-
-		//std::cout << "\nerased->left != nullptr && erased->right == nullptr\n";
-
-		if (erased == parent->left)
-		{
-			parent->left = child;
-			child->parent = parent;
-			//erased->left = nullptr;
-			//erased.reset(); //erased = nullptr;
-			return true;
-		}
-
-		if (erased == parent->right)
-		{
-			parent->right = child;
-			child->parent = parent;
-			//erased->right = nullptr;
-			//erased.reset();//erased = nullptr;
-			return true;
-		}
-
-		throw std::logic_error("Error deleting resource");
+		erased_parent->left = nullptr;
+		return;
 	}
-template <typename T>
-	bool erase_R_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
+
+	if (erased_parent->right == erased)
 	{
-		std::shared_ptr<Node<T>> parent = erased->parent.lock();
-		std::shared_ptr<Node<T>> child = erased->right;
+		erased_parent->right = nullptr;
+		return;
+	}
 
-		if (!parent)
-		{
-			/*std::shared_ptr<Node<T>> new_root = erased->right;
-			root_->right = nullptr;
-			root_ = new_root;
-			erased.reset();*/
-			child->parent = root_->parent;
-			root_ = child;
-			return true;
-		}
+	throw std::logic_error("Error deleting resource");
+}
+template <typename T>
+bool erase_L_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
+{
+	std::shared_ptr<Node<T>> parent = erased->parent.lock();
+	std::shared_ptr<Node<T>> child = erased->left;
 
-		//std::cout << "\nerased->left == nullptr && erased->right != nullptr\n";
+	if (!parent)
+	{
+		/*
+		std::shared_ptr<Node<T>> new_root = erased->left;
+		root_->left = nullptr;
+		root_ = new_root;
+		erased.reset();
+		*/
+		child->parent = root_->parent;
+		root_ = child;
+		return true;
+	}
 
-		if (erased == parent->left)
-		{
-			parent->left = child;
-			child->parent = parent;
-			//erased->left = nullptr;
-			//erased.reset(); //erased = nullptr;
-			return true;
-		}
+	//std::cout << "\nerased->left != nullptr && erased->right == nullptr\n";
 
-		if (erased == parent->right)
-		{
-			parent->right = child;
-			child->parent = parent;
-			//erased->right = nullptr;
-			//erased.reset(); //erased = nullptr;
-			return true;
-		}
+	if (erased == parent->left)
+	{
+		parent->left = child;
+		child->parent = parent;
+		//erased->left = nullptr;
+		//erased.reset(); //erased = nullptr;
+		return true;
+	}
 
+	if (erased == parent->right)
+	{
+		parent->right = child;
+		child->parent = parent;
+		//erased->right = nullptr;
+		//erased.reset();//erased = nullptr;
+		return true;
+	}
+
+	throw std::logic_error("Error deleting resource");
+}
+template <typename T>
+bool erase_R_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
+{
+	std::shared_ptr<Node<T>> parent = erased->parent.lock();
+	std::shared_ptr<Node<T>> child = erased->right;
+
+	if (!parent)
+	{
+		/*std::shared_ptr<Node<T>> new_root = erased->right;
+		root_->right = nullptr;
+		root_ = new_root;
+		erased.reset();*/
+		child->parent = root_->parent;
+		root_ = child;
+		return true;
+	}
+
+	//std::cout << "\nerased->left == nullptr && erased->right != nullptr\n";
+
+	if (erased == parent->left)
+	{
+		parent->left = child;
+		child->parent = parent;
+		//erased->left = nullptr;
+		//erased.reset(); //erased = nullptr;
+		return true;
+	}
+
+	if (erased == parent->right)
+	{
+		parent->right = child;
+		child->parent = parent;
+		//erased->right = nullptr;
+		//erased.reset(); //erased = nullptr;
+		return true;
+	}
+
+	throw std::logic_error("Error deleting resource");
+
+}
+template <typename T>
+void erase_L_and_R_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
+{
+	std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
+	std::shared_ptr<Node<T>> erased_child_L = erased->left;
+	std::shared_ptr<Node<T>> erased_child_R = erased->right;
+
+	//std::cout << "\nerased->left != nullptr && erased->right != nullptr\n";
+
+	std::shared_ptr<Node<T>> max = erased->left;
+
+	while (max->right)
+	{
+		max = max->right;
+	}
+
+	if (!max)
 		throw std::logic_error("Error deleting resource");
 
-	}
-template <typename T>
-	void erase_L_and_R_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
+	//если удаляемый и заменяемый не связаны отношением "родитель-левый ребёнок"
+	if (max != erased_child_L)
 	{
-		std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
-		std::shared_ptr<Node<T>> erased_child_L = erased->left;
-		std::shared_ptr<Node<T>> erased_child_R = erased->right;
+		//разрываем старую связь max с его родителем
+		max->parent.lock()->right = max->left;
 
-		//std::cout << "\nerased->left != nullptr && erased->right != nullptr\n";
+		if (max->left != nullptr)
+			max->left->parent = max->parent;
 
-		std::shared_ptr<Node<T>> max = erased->left;
+		//связываем max и его нового левого ребёнка:
+		erased_child_L->parent = max;
+		max->left = erased_child_L;
+	}
 
-		while (max->right)
-		{
-			max = max->right;
-		}
+	//связываем max и его нового правого ребёнка:
+	erased_child_R->parent = max;
+	max->right = erased_child_R;
 
-		if (!max)
-			throw std::logic_error("Error deleting resource");
+	//направляем max на нового родителя
+	max->parent = erased_parent; //?? error
 
-		//если удаляемый и заменяемый не связаны отношением "родитель-левый ребёнок"
-		if (max != erased_child_L)
-		{
-			//разрываем старую связь max с его родителем
-			max->parent.lock()->right = max->left;
-
-			if (max->left != nullptr)
-				max->left->parent = max->parent;
-
-			//связываем max и его нового левого ребёнка:
-			erased_child_L->parent = max;
-			max->left = erased_child_L;
-		}
-
-		//связываем max и его нового правого ребёнка:
-		erased_child_R->parent = max;
-		max->right = erased_child_R;
-
-		//направляем max на нового родителя
-		max->parent = erased_parent; //?? error
-
-		//если родитель есть, то направляем его на max
-		if (erased_parent != nullptr)
-		{
-			if (erased == erased_parent->left)
-				erased_parent->left = max;
-			else
-				erased_parent->right = max;
-		}
+	//если родитель есть, то направляем его на max
+	if (erased_parent != nullptr)
+	{
+		if (erased == erased_parent->left)
+			erased_parent->left = max;
 		else
-			root_ = max;
+			erased_parent->right = max;
 	}
-	template <typename T>
-	std::shared_ptr<Node<T>> min_ (std::shared_ptr<Node<T>> currentN)
-	{
-		if(!currentN)
-			return nullptr;
-		auto t_min = currentN->data;
-		while(currentN->left)
-		{
-			currentN = currentN->left;
-		}
-		return currentN;
+	else
+		root_ = max;
+}
+template <typename T>
+std::shared_ptr<Node<T>> min_(std::shared_ptr<Node<T>> currentN)
+{
+	//if (!currentN)
+		//return nullptr;
 
-	}
-
-	template <typename T>
-	std::shared_ptr<Node<T>> max_ (std::shared_ptr<Node<T>> currentN)
+	while (currentN->left)
 	{
-		if(!currentN)
-			return nullptr;
-	
-		while(currentN->right)
-		{
-			currentN = currentN->right;
-		}
-		return currentN;
+		currentN = currentN->left;
+	}
+	return currentN;
 
-	}
-	template <typename T>
-	void to_vector_(std::vector<T>& accum, std::shared_ptr<Node<T>> currentN)
+}
+
+template <typename T>
+std::shared_ptr<Node<T>> max_(std::shared_ptr<Node<T>> currentN)
+{
+	if (!currentN)
+		return nullptr;
+
+	while (currentN->right)
 	{
-		if (currentN)
-		{
-			to_vector_(accum, currentN->left);
-			accum.push_back(currentN->data);
-			to_vector_(accum, currentN->right);
-		}
+		currentN = currentN->right;
 	}
-	//template <typename T>
+	return currentN;
+
+}
+template <typename T>
+void to_vector_(std::vector<T>& accum, std::shared_ptr<Node<T>> currentN)
+{
+	if (currentN)
+	{
+		to_vector_(accum, currentN->left);
+		accum.push_back(currentN->data);
+		to_vector_(accum, currentN->right);
+	}
+}
+//template <typename T>
