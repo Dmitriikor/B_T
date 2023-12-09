@@ -11,7 +11,7 @@ struct Node
 	std::shared_ptr	<Node<T>> right;
 	std::weak_ptr	<Node<T>> parent;
 
-	int height = 0;
+	size_t height = 1;
 
 	explicit Node(const T& value) : data(value)/*, prev(this)*/
 	{
