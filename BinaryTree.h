@@ -41,14 +41,89 @@ public:
 
 	void insert(const T& value)
 	{
+		std::shared_ptr<Node<T>> currentN;
+
 		if (!root_)
 		{
 			root_ = std::make_shared<Node<T>>(value);
+			//currentN = root_;
+			++size_;
+			return;
 		}
-		else {
-			recalculate_levels_(insertR(root_, value));
+		else 
+		{
+			currentN = insertR(root_, value);
+			recalculate_levels_(currentN);
+			++size_;
+			check_lvl_(root_);
+			std::cout << "\n" << "print after insert\n";
+			print_order_chatGPT(root_);
+			return;
 		}
-		++size_;
+		
+		throw 1;
+	}
+
+	void check_lvl_(std::shared_ptr<Node<T>> currentN)
+	{
+
+		if (!currentN)
+		{
+			return;
+		}
+		//currentN = currentN->parent.lock();
+
+		int L_temp = 0;
+		int R_temp = 0;
+
+		if(currentN->left == nullptr)
+		{
+			L_temp = 0;
+		}
+		else
+		{
+			L_temp = currentN->left->height;
+		}
+		if(currentN->right == nullptr)
+		{
+			R_temp = 0;
+		}
+		else
+		{
+			R_temp = currentN->right->height;
+		}
+		if (L_temp - R_temp > 1)
+		{
+			std::cout <<"\n" << currentN->data << " = left Hight > right+1 Check\n";
+			print_order_chatGPT(root_);
+			//
+			//if(currentN->left->left == nullptr)
+			//	check_lvl_();
+			//
+			right_rotate_(currentN);
+			recalculate_levels_(currentN);
+			std::cout <<"\n";
+			std::cout <<"\n" << currentN->data << "Check after right rotate\n";
+			print_order_chatGPT(root_);
+			check_lvl_(currentN);
+			return;
+		}
+		if (R_temp - L_temp > 1)
+		{
+			std::cout <<"\n"  << currentN->data << " = right Hight > left+1 Check\n";
+			print_order_chatGPT(root_);
+			//
+			//if(currentN->right->right == nullptr)
+			//	right_rotate_(currentN->right);
+			//
+			left_rotate_(currentN);
+			recalculate_levels_(currentN);
+			std::cout <<"\n";
+			std::cout <<"\n" << currentN->data << "Check after left rotate\n";
+			print_order_chatGPT(root_);
+			check_lvl_(currentN);
+			return;
+		}
 	}
 
 	size_t size()
@@ -195,6 +270,11 @@ private:
 
 		--size_;
 
+		return erase__(erased);
+	}
+
+	bool erase__(std::shared_ptr<Node<T>> erased)
+	{
 		std::shared_ptr<Node<T>> parentN = erased->parent.lock();
 
 		if (erased->left == nullptr && erased->right == nullptr)
@@ -291,7 +371,8 @@ private:
 	}
 
 
-	static std::shared_ptr<Node<T>> insertR(std::shared_ptr<Node<T>> currentN, const T& value)
+	//static 
+	std::shared_ptr<Node<T>> insertR(std::shared_ptr<Node<T>> currentN, const T& value)
 	{
 		if (value < currentN->data)
 		{
@@ -397,7 +478,7 @@ private:
 	}
 
 	/*
-		x
+		x currentN
 		 \
 		  y			=>			y
 		   \				   / \
@@ -406,11 +487,21 @@ private:
 	*/
 	void left_rotate_(std::shared_ptr<Node<T>> currentN)
 	{
-		if (currentN->right == nullptr || currentN->right->right == nullptr)
+		if (currentN->right == nullptr)
 		{
 			return;
 			//throw 1;
 		}
+		bool is_temp_used = false;
+			std::shared_ptr<Node<T>> temp = std::make_shared<Node<T>>(-1);
+		if (currentN->right->right == nullptr)
+		{
+			currentN->right->right = temp;
+			temp->parent.lock() = currentN->right;
+			is_temp_used = true;
+		}
+
+
 
 		std::shared_ptr<Node<T>> y = currentN->right;
 
@@ -441,15 +532,29 @@ private:
 
 		y->left = currentN;
 		currentN->parent.lock() = y;
+
+		if(is_temp_used)
+			erase__(temp);
 	}
 
 	void right_rotate_(std::shared_ptr<Node<T>> currentN)
 	{
-		if (currentN->left == nullptr || currentN->left->left == nullptr)
+		if (currentN->left == nullptr)
 		{
 			return;
+			
 			//throw 1;
 		}
+
+		bool is_temp_used = false;
+		std::shared_ptr<Node<T>> temp = std::make_shared<Node<T>>(-1);
+		if (currentN->left->left == nullptr)
+		{
+			currentN->left->left = temp;
+			temp->parent.lock() = currentN->left;
+			is_temp_used = true;
+		}
+
 
 		std::shared_ptr<Node<T>> x = currentN->left;
 
@@ -480,6 +585,9 @@ private:
 
 		x->right = currentN;
 		currentN->parent.lock() = x;
+
+		if(is_temp_used)
+			erase__(temp);
 	}
 
 public:

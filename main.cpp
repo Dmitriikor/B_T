@@ -62,7 +62,16 @@ int main()
 			std::vector<int> random2;
 			BinaryTree<int> tree;
 			fill_randomly(tree, random);
+			std::cout << "\n";
 			tree.print_in_order();
+
+			std::cout << "\n";
+			system("pause");
+			system("pause");
+			system("pause");
+			system("cls");
+			continue;
+
 
 			//std::cout <<"\n"<< min(random) << " / "	<< tree.min() << "\n";
 			assert(min(random) == tree.min());
