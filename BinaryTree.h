@@ -31,8 +31,8 @@ private:
 	std::shared_ptr<Node<T>> root_;
 	size_t size_ = 0;
 
-	int left_height = 0;
-	int right_height = 0;
+	//int left_height = 0;
+	//int right_height = 0;
 
 	friend class iterator;
 public:
@@ -52,11 +52,16 @@ public:
 		}
 		else 
 		{
+			//std::cout << "\n" << "print before insert\n";
+			//print_order_chatGPT(root_);
 			currentN = insertR(root_, value);
-			recalculate_levels_(currentN);
+			//recalculate_levels__(currentN);
 			++size_;
-			check_lvl_(root_);
 			std::cout << "\n" << "print after insert\n";
+			print_order_chatGPT(root_);
+			check_lvl_(currentN);
+			std::cout << "\n" ;
+			std::cout << "\n" << "print after check_lvl_\n";
 			print_order_chatGPT(root_);
 			return;
 		}
@@ -66,13 +71,13 @@ public:
 
 	void check_lvl_(std::shared_ptr<Node<T>> currentN)
 	{
-
 		if (!currentN)
 		{
 			return;
 		}
 		//currentN = currentN->parent.lock();
 
+/*
 		int L_temp = 0;
 		int R_temp = 0;
 
@@ -84,6 +89,7 @@ public:
 		{
 			L_temp = currentN->left->height;
 		}
+
 		if(currentN->right == nullptr)
 		{
 			R_temp = 0;
@@ -92,38 +98,45 @@ public:
 		{
 			R_temp = currentN->right->height;
 		}
+		*/
+
+			int L_temp = (currentN->left == nullptr) ? 0 : (currentN->left->height);
+			int R_temp = (currentN->right == nullptr) ? 0 : (currentN->right->height);
+		
 		if (L_temp - R_temp > 1)
 		{
-			std::cout <<"\n" << currentN->data << " = left Hight > right+1 Check\n";
+			std::cout <<"\n" << currentN->data << " = L_temp - R_temp > 1 Check\n";
 			print_order_chatGPT(root_);
 			//
 			//if(currentN->left->left == nullptr)
 			//	check_lvl_();
 			//
 			right_rotate_(currentN);
-			recalculate_levels_(currentN);
+
+
 			std::cout <<"\n";
 			std::cout <<"\n" << currentN->data << "Check after right rotate\n";
 			print_order_chatGPT(root_);
-			check_lvl_(currentN);
-			return;
+
 		}
-		if (R_temp - L_temp > 1)
+		else if (L_temp - R_temp < -1)
 		{
-			std::cout <<"\n"  << currentN->data << " = right Hight > left+1 Check\n";
+			std::cout <<"\n"  << currentN->data << " = L_temp - R_temp < -1 Check\n";
 			print_order_chatGPT(root_);
 			//
 			//if(currentN->right->right == nullptr)
 			//	right_rotate_(currentN->right);
 			//
 			left_rotate_(currentN);
-			recalculate_levels_(currentN);
+
 			std::cout <<"\n";
 			std::cout <<"\n" << currentN->data << "Check after left rotate\n";
 			print_order_chatGPT(root_);
-			check_lvl_(currentN);
-			return;
 		}
+
+		recalculate_levels__(currentN);
+		std::shared_ptr<Node<T>> parentN = currentN->parent.lock();
+		check_lvl_(parentN);
 	}
 
 	size_t size()
@@ -371,8 +384,7 @@ private:
 	}
 
 
-	//static 
-	std::shared_ptr<Node<T>> insertR(std::shared_ptr<Node<T>> currentN, const T& value)
+	static std::shared_ptr<Node<T>> insertR(std::shared_ptr<Node<T>> currentN, const T& value)
 	{
 		if (value < currentN->data)
 		{
@@ -424,7 +436,7 @@ public:
 			check__(currentN->left);
 
 			if (currentN != root_ && currentN->parent.lock() == nullptr)
-				std::cout << currentN->data << "\\";
+				std::cout << currentN->data << "\\\a";
 
 			check__(currentN->right);
 		}
@@ -442,6 +454,19 @@ public:
 	}
 
 private:
+	void recalculate_levels__(std::shared_ptr<Node<T>> currentN)
+	{
+		if (currentN == nullptr)
+		{
+			//throw 1;
+			return;
+		}
+			size_t left_height = (currentN->left == nullptr) ? 0 : (currentN->left->height);
+			size_t right_height = (currentN->right == nullptr) ? 0 : (currentN->right->height);
+
+			currentN->height = std::max(left_height, right_height) + 1;
+	}
+
 
 	void recalculate_levels_(std::shared_ptr<Node<T>> currentN)
 	{
@@ -478,116 +503,136 @@ private:
 	}
 
 	/*
-		x currentN
+		x (currentN)
 		 \
 		  y			=>			y
 		   \				   / \
 			z				  x   z
 	
 	*/
-	void left_rotate_(std::shared_ptr<Node<T>> currentN)
+	void left_rotate_(std::shared_ptr<Node<T>> x)
 	{
-		if (currentN->right == nullptr)
+		if (x->right == nullptr)
 		{
 			return;
 			//throw 1;
 		}
-		bool is_temp_used = false;
-			std::shared_ptr<Node<T>> temp = std::make_shared<Node<T>>(-1);
-		if (currentN->right->right == nullptr)
+
+		if (x->right->right == nullptr)
 		{
-			currentN->right->right = temp;
-			temp->parent.lock() = currentN->right;
-			is_temp_used = true;
+			return;
+			//throw 1;
 		}
+		/*
+		bool is_temp_used = false;
+		std::shared_ptr<Node<T>> temp = std::make_shared<Node<T>>(-1);
+		if (x->right->right == nullptr)
+		{
+			x->right->right = temp;
+			temp->parent.lock() = x->right;
+			is_temp_used = true;
+		}*/
 
+		std::shared_ptr<Node<T>> y = x->right;
 
-
-		std::shared_ptr<Node<T>> y = currentN->right;
-
-		currentN->right = y->left;
-
+		x->right = y->left;
 		if (y->left != nullptr)
 		{
-			y->left->parent.lock() = currentN;
+			y->left->parent.lock() = x;
 		}
 
-		y->parent.lock() = currentN->parent.lock();
-
-		if (currentN->parent.lock() == nullptr)
+		y->parent.lock() = x->parent.lock();
+		if (x->parent.lock() == nullptr)
 		{
 			root_ = y;
 		}
 		else
 		{
-			if (currentN == currentN->parent.lock()->left)
+			if (x == x->parent.lock()->left) //left
 			{
-				currentN->parent.lock()->left = y;
+				x->parent.lock()->left = y;
 			}
 			else
 			{
-				currentN->parent.lock()->right = y;
+				x->parent.lock()->right = y;
 			}
 		}
 
-		y->left = currentN;
-		currentN->parent.lock() = y;
-
+		y->left = x;
+		x->parent.lock() = y;
+/*
 		if(is_temp_used)
 			erase__(temp);
+			*/
 	}
 
-	void right_rotate_(std::shared_ptr<Node<T>> currentN)
+
+/*
+				x (currentN)
+			  /
+		  	y					=>   y
+		  /				  			/ \
+		z				  		   x   z
+	
+	*/
+	void right_rotate_(std::shared_ptr<Node<T>> x)
 	{
-		if (currentN->left == nullptr)
+		if (x->left == nullptr)
 		{
 			return;
 			
 			//throw 1;
 		}
 
+		if (x->left->left == nullptr)		
+		{
+			return;
+			
+			//throw 1;
+		}
+/*
 		bool is_temp_used = false;
 		std::shared_ptr<Node<T>> temp = std::make_shared<Node<T>>(-1);
-		if (currentN->left->left == nullptr)
+		if (x->left->left == nullptr)
 		{
-			currentN->left->left = temp;
-			temp->parent.lock() = currentN->left;
+			x->left->left = temp;
+			temp->parent.lock() = x->left;
 			is_temp_used = true;
 		}
+*/
 
+		std::shared_ptr<Node<T>> y = x->left;
 
-		std::shared_ptr<Node<T>> x = currentN->left;
-
-		currentN->left = x->right;
-
-		if (x->right != nullptr)
+		x->left = y->right;
+		if (y->right != nullptr)
 		{
-			x->right->parent.lock() = currentN;
+			y->right->parent.lock() = x;
 		}
 
-		x->parent = currentN->parent;
-
-		if (currentN->parent.lock() == nullptr)
+		y->parent = x->parent;
+		if (x->parent.lock() == nullptr)
 		{
-			root_ = x;
+			root_ = y;
 		}
 		else
 		{
-			if (currentN == currentN->parent.lock()->left)
+			if (x == x->parent.lock()->left)
 			{
-				currentN->parent.lock()->left = x;
+				x->parent.lock()->left = y;
 			}
 			else
 			{
-				currentN->parent.lock()->right = x;
+				x->parent.lock()->right = y;
 			}
 		}
 
-		x->right = currentN;
-		currentN->parent.lock() = x;
+		y->right = x;
+		x->parent.lock() = y;
 
+/*
 		if(is_temp_used)
 			erase__(temp);
+			*/
 	}
 
 public:

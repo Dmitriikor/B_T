@@ -66,6 +66,7 @@ int main()
 			tree.print_in_order();
 
 			std::cout << "\n";
+			tree.check();
 			system("pause");
 			system("pause");
 			system("pause");
