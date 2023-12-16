@@ -60,7 +60,8 @@
     "xmemory": "cpp",
     "xstring": "cpp",
     "xtr1common": "cpp",
-    "xutility": "cpp"
+    "xutility": "cpp",
+    "fstream": "cpp"
 },
 "C_Cpp.default.cppStandard": "c++23",
 "C_Cpp.default.cStandard": "c17"

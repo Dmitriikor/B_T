@@ -4,6 +4,7 @@
 #include <iterator> 
 #include <algorithm>
 
+
 template <typename U>
 class no_L_ñhildren
 {
@@ -41,6 +42,12 @@ public:
 
 	void insert(const T& value)
 	{
+		#define ANSI_COLOR_RED     "\x1b[31m"
+		#define ANSI_COLOR_RESET   "\x1b[0m"
+
+		std::cout << "\n" << ANSI_COLOR_RED << value << " - print before insert\n"<< ANSI_COLOR_RESET;
+		
+
 		std::shared_ptr<Node<T>> currentN;
 
 		if (!root_)
@@ -52,17 +59,20 @@ public:
 		}
 		else 
 		{
-			//std::cout << "\n" << "print before insert\n";
-			//print_order_chatGPT(root_);
+			
+
+			print_order_chatGPT(root_);
 			currentN = insertR(root_, value);
 			//recalculate_levels__(currentN);
 			++size_;
-			//std::cout << "\n" << "print after insert\n";
-			//print_order_chatGPT(root_);
+			std::cout << "\n" ;
+			std::cout << "\n" << "print after insert\n";
+			print_order_chatGPT(root_);
 			check_lvl_(currentN);
 			std::cout << "\n" ;
-			//std::cout << "\n" << "print after check_lvl_\n";
-			//print_order_chatGPT(root_);
+			std::cout << "\n" ;
+			std::cout << "\n" << "print after check_lvl_\n";
+			print_order_chatGPT(root_);
 			return;
 		}
 		
@@ -75,63 +85,20 @@ public:
 		{
 			return;
 		}
-		//currentN = currentN->parent.lock();
-
-/*
-		int L_temp = 0;
-		int R_temp = 0;
-
-		if(currentN->left == nullptr)
-		{
-			L_temp = 0;
-		}
-		else
-		{
-			L_temp = currentN->left->height;
-		}
-
-		if(currentN->right == nullptr)
-		{
-			R_temp = 0;
-		}
-		else
-		{
-			R_temp = currentN->right->height;
-		}
-		*/
 
 			int L_temp = (currentN->left == nullptr) ? 0 : (currentN->left->height);
 			int R_temp = (currentN->right == nullptr) ? 0 : (currentN->right->height);
 		
 		if (L_temp - R_temp > 1)
 		{
-			std::cout <<"\n" << currentN->data << " = L_temp - R_temp > 1 Check\n";
-			print_order_chatGPT(root_);
-			//
-			//if(currentN->left->left == nullptr)
-			//	check_lvl_();
-			//
 			right_rotate_(currentN);
-
-
-			std::cout <<"\n";
-			//std::cout <<"\n" << currentN->data << "Check after right rotate\n";
-			//print_order_chatGPT(root_);
-
 		}
 		else if (L_temp - R_temp < -1)
 		{
-			std::cout <<"\n"  << currentN->data << " = L_temp - R_temp < -1 Check\n";
-			print_order_chatGPT(root_);
-			//
-			//if(currentN->right->right == nullptr)
-			//	right_rotate_(currentN->right);
-			//
-			left_rotate_(currentN);
-
-			//std::cout <<"\n";
-			//std::cout <<"\n" << currentN->data << "Check after left rotate\n";
+			//std::cout <<"\n"  << currentN->data << " = L_temp - R_temp < -1 Check\n";
 			//print_order_chatGPT(root_);
+			left_rotate_(currentN);
+	
 		}
 
 		recalculate_levels__(currentN);
@@ -519,7 +486,31 @@ private:
 
 		if (x->right->right == nullptr)
 		{
-			std::cout << "x->right->right == nullptr\n";
+			
+			if(x->right->left == nullptr)
+			{
+				print_order_chatGPT(root_);
+				throw 1;
+			}
+			if(x->right->left->left == nullptr && x->right->left->right == nullptr)
+			{
+				std::shared_ptr<Node<T>> temp = x->right->left;
+				std::shared_ptr<Node<T>> tempR = x->right;
+
+				erase__(x->right->left);
+
+				x->right = temp;
+				temp->parent = x;
+
+				temp->right = tempR;
+				tempR->parent = temp;
+				tempR->left = nullptr;
+
+				print_order_chatGPT(root_);
+
+			}
+			right_rotate_(x->right);
+			//print_order_chatGPT(root_);
 		}
 
 
@@ -572,7 +563,18 @@ private:
 
 		if (x->left->left == nullptr)		
 		{
-			std::cout << "x->left->left == nullptr\n";
+			if(x->left->right == nullptr)
+			{
+				print_order_chatGPT(root_);
+				throw 1;
+			}
+
+			//TODO x->left->right->left && x->left->right->right == nullptr
+			{
+				//TODO swap
+			}
+			left_rotate_(x->left);
+			//print_order_chatGPT(root_);
 		}
 
 		std::shared_ptr<Node<T>> y = x->left;
@@ -618,6 +620,29 @@ public:
 
 };
 
+
+#include <fstream>
+#include <memory>
+// template <typename T>
+// void print_order_chatGPT(std::shared_ptr<Node<T>> const currentN, int level = 0)
+// {
+// 	print_order_chatGPT_(currentN, level);
+
+// 	std::ofstream file("output.txt", std::ios::app);
+// 	if (file.is_open())
+//     {
+//        print_order_chatGPT__(currentN, 0, &file);
+// 		file << std::endl;
+// 		file << std::endl;
+// 	 	file << std::endl;
+//         file.close();
+//     }
+//     else
+//     {
+//         std::cerr << "Unable to open the file for writing." << std::endl;
+//     }
+// }
+
 template <typename T>
 void print_order_chatGPT(std::shared_ptr<Node<T>> const currentN, int level = 0)
 {
@@ -635,6 +660,27 @@ void print_order_chatGPT(std::shared_ptr<Node<T>> const currentN, int level = 0)
 		print_order_chatGPT(currentN->left, level + 1);
 	}
 
+}
+
+template <typename T>
+void print_order_chatGPT__(std::shared_ptr<Node<T>> const currentN, int level = 0, std::ofstream* fileStream = nullptr)
+{
+    if (currentN)
+    {
+        print_order_chatGPT__(currentN->right, level + 1, fileStream);
+
+        for (int i = 0; i < level; ++i)
+        {
+            if (fileStream)
+                (*fileStream) << "|\t";
+        }
+
+        if (fileStream)
+            (*fileStream) << currentN->data << "(" << currentN->height << ")" << "\n";
+
+        print_order_chatGPT__(currentN->left, level + 1, fileStream);
+
+    }
 }
 
 template <typename T>

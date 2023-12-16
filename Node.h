@@ -7,8 +7,8 @@ struct Node
 {
 	T data;
 
-	std::shared_ptr	<Node<T>> left;
 	std::shared_ptr	<Node<T>> right;
+	std::shared_ptr	<Node<T>> left;
 	std::weak_ptr	<Node<T>> parent;
 
 	size_t height = 1;

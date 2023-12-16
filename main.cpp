@@ -18,6 +18,15 @@ void fill_randomly(BinaryTree<int>& root, std::vector<int>& random, int size = 1
 	for (int i = 0; i < size; ++i)
 	{
 		int random_value = dis(gen);
+		for(int j = 0; j < random.size(); ++j)
+		{
+			if (random[j] == random_value)
+			{
+				--i;
+				break;
+			}
+		}
+
 		random.push_back(random_value);
 		root.insert(random_value);
 	}
@@ -58,21 +67,38 @@ int main()
 	{
 		while (true)
 		{
-			// std::vector<int> random;
-			// std::vector<int> random2;
-			// BinaryTree<int> tree;
-			// fill_randomly(tree, random);
-			// std::cout << "\n";
-			// tree.check();
-			// tree.print_in_order();
+			std::vector<int> random;
+			std::vector<int> random2;
+			BinaryTree<int> tree;
+			//fill_randomly(tree, random);
+		tree.insert(21);
+		//tree.print_in_order();
+		tree.insert(19);
+		//tree.print_in_order();
+		tree.insert(-19);
+		//tree.print_in_order();
+		tree.insert(5);
+		//tree.print_in_order();
+		tree.insert(4);
+		//tree.print_in_order();
+		tree.insert(-45);
+		//tree.print_in_order();
+		tree.insert(14);
+		//tree.print_in_order();
+		tree.insert(-21);
+		//tree.print_in_order();
+		tree.insert(-6);
+			std::cout << "\n";
+			tree.check();
+			tree.print_in_order();
 
-			// std::cout << "\n";
-			// tree.check();
-			// system("pause");
-			// system("pause");
-			// system("pause");
-			// system("cls");
-			// continue;
+			std::cout << "\n";
+			tree.check();
+			system("pause");
+			system("pause");
+			system("pause");
+			system("cls");
+			continue;
 
 
 			// //std::cout <<"\n"<< min(random) << " / "	<< tree.min() << "\n";
@@ -98,35 +124,35 @@ int main()
 			// 	// {
 			// 	// 	std::cout << "/"<< *it ;
 			// 	// }
-				system("pause");
-				std::cout << "\n";
+				// system("pause");
+				// std::cout << "\n";
 				
-				system("cls");
-				BinaryTree<int> treeLRT;
-				treeLRT.insert(1);
-				treeLRT.insert(2);
-				treeLRT.insert(3);
-				treeLRT.print_in_order();
-				std::cout << "\n";
-				treeLRT.left_rotate(1);
-				treeLRT.check();
-				treeLRT.print_in_order();
+				// system("cls");
+				// BinaryTree<int> treeLRT;
+				// treeLRT.insert(1);
+				// treeLRT.insert(2);
+				// treeLRT.insert(3);
+				// treeLRT.print_in_order();
+				// std::cout << "\n";
+				// treeLRT.left_rotate(1);
+				// treeLRT.check();
+				// treeLRT.print_in_order();
 
-				std::cout << "\n";
-				std::cout << "\n";
+				// std::cout << "\n";
+				// std::cout << "\n";
 
-				BinaryTree<int> treeRRT;
-				treeRRT.insert(3);
-				treeRRT.insert(2);
-				treeRRT.insert(1);
-				treeRRT.print_in_order();
-				std::cout << "\n";
-				treeRRT.right_rotate(1);
-				treeRRT.check();
-				treeRRT.print_in_order();
+				// BinaryTree<int> treeRRT;
+				// treeRRT.insert(3);
+				// treeRRT.insert(2);
+				// treeRRT.insert(1);
+				// treeRRT.print_in_order();
+				// std::cout << "\n";
+				// treeRRT.right_rotate(1);
+				// treeRRT.check();
+				// treeRRT.print_in_order();
 
-				std::cout << "\n";
-				system("pause");
+				// std::cout << "\n";
+				// system("pause");
 
 				// std::cout << "\n";
 				// tree.print_in_order();
