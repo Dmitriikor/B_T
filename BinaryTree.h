@@ -57,12 +57,12 @@ public:
 			currentN = insertR(root_, value);
 			//recalculate_levels__(currentN);
 			++size_;
-			std::cout << "\n" << "print after insert\n";
-			print_order_chatGPT(root_);
+			//std::cout << "\n" << "print after insert\n";
+			//print_order_chatGPT(root_);
 			check_lvl_(currentN);
 			std::cout << "\n" ;
-			std::cout << "\n" << "print after check_lvl_\n";
-			print_order_chatGPT(root_);
+			//std::cout << "\n" << "print after check_lvl_\n";
+			//print_order_chatGPT(root_);
 			return;
 		}
 		
@@ -115,8 +115,8 @@ public:
 
 
 			std::cout <<"\n";
-			std::cout <<"\n" << currentN->data << "Check after right rotate\n";
-			print_order_chatGPT(root_);
+			//std::cout <<"\n" << currentN->data << "Check after right rotate\n";
+			//print_order_chatGPT(root_);
 
 		}
 		else if (L_temp - R_temp < -1)
@@ -129,9 +129,9 @@ public:
 			//
 			left_rotate_(currentN);
 
-			std::cout <<"\n";
-			std::cout <<"\n" << currentN->data << "Check after left rotate\n";
-			print_order_chatGPT(root_);
+			//std::cout <<"\n";
+			//std::cout <<"\n" << currentN->data << "Check after left rotate\n";
+			//print_order_chatGPT(root_);
 		}
 
 		recalculate_levels__(currentN);
@@ -515,23 +515,13 @@ private:
 		if (x->right == nullptr)
 		{
 			return;
-			//throw 1;
 		}
 
 		if (x->right->right == nullptr)
 		{
-			return;
-			//throw 1;
+			std::cout << "x->right->right == nullptr\n";
 		}
-		/*
-		bool is_temp_used = false;
-		std::shared_ptr<Node<T>> temp = std::make_shared<Node<T>>(-1);
-		if (x->right->right == nullptr)
-		{
-			x->right->right = temp;
-			temp->parent.lock() = x->right;
-			is_temp_used = true;
-		}*/
+
 
 		std::shared_ptr<Node<T>> y = x->right;
 
@@ -541,7 +531,7 @@ private:
 			y->left->parent.lock() = x;
 		}
 
-		y->parent.lock() = x->parent.lock();
+		y->parent = x->parent.lock();
 		if (x->parent.lock() == nullptr)
 		{
 			root_ = y;
@@ -559,11 +549,8 @@ private:
 		}
 
 		y->left = x;
-		x->parent.lock() = y;
-/*
-		if(is_temp_used)
-			erase__(temp);
-			*/
+		x->parent = y;
+
 	}
 
 
@@ -581,25 +568,12 @@ private:
 		{
 			return;
 			
-			//throw 1;
 		}
 
 		if (x->left->left == nullptr)		
 		{
-			return;
-			
-			//throw 1;
+			std::cout << "x->left->left == nullptr\n";
 		}
-/*
-		bool is_temp_used = false;
-		std::shared_ptr<Node<T>> temp = std::make_shared<Node<T>>(-1);
-		if (x->left->left == nullptr)
-		{
-			x->left->left = temp;
-			temp->parent.lock() = x->left;
-			is_temp_used = true;
-		}
-*/
 
 		std::shared_ptr<Node<T>> y = x->left;
 
@@ -627,12 +601,7 @@ private:
 		}
 
 		y->right = x;
-		x->parent.lock() = y;
-
-/*
-		if(is_temp_used)
-			erase__(temp);
-			*/
+		x->parent = y;
 	}
 
 public:

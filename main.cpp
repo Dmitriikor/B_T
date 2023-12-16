@@ -58,47 +58,48 @@ int main()
 	{
 		while (true)
 		{
-			std::vector<int> random;
-			std::vector<int> random2;
-			BinaryTree<int> tree;
-			fill_randomly(tree, random);
-			std::cout << "\n";
-			tree.print_in_order();
+			// std::vector<int> random;
+			// std::vector<int> random2;
+			// BinaryTree<int> tree;
+			// fill_randomly(tree, random);
+			// std::cout << "\n";
+			// tree.check();
+			// tree.print_in_order();
 
-			std::cout << "\n";
-			tree.check();
-			system("pause");
-			system("pause");
-			system("pause");
-			system("cls");
-			continue;
-
-
-			//std::cout <<"\n"<< min(random) << " / "	<< tree.min() << "\n";
-			assert(min(random) == tree.min());
-
-			assert(max(random) == tree.max());
-			if (tree.erase(return_randomly(random)))
-			{
-				tree.to_vector(random2);
-				std::cout <<"\n"<< random.size() << " / "	<< random2.size() << "\n";
-				assert(random.size()-1 == random2.size());
+			// std::cout << "\n";
+			// tree.check();
+			// system("pause");
+			// system("pause");
+			// system("pause");
+			// system("cls");
+			// continue;
 
 
-				tree.print_in_order();
-				tree.print();
-				std::cout << "\n";
-				for (auto it = tree.begin(); it != tree.end(); ++it)
-				{
-					std::cout << "\\"<< *it ;
-				}
-				// std::cout << "\n";
-				// for (auto it = tree.begin(); it != tree.end(); --it)
-				// {
-				// 	std::cout << "/"<< *it ;
-				// }
-				std::cout << "\n";
+			// //std::cout <<"\n"<< min(random) << " / "	<< tree.min() << "\n";
+			// assert(min(random) == tree.min());
+
+			// assert(max(random) == tree.max());
+			// if (tree.erase(return_randomly(random)))
+			// {
+			// 	tree.to_vector(random2);
+			// 	std::cout <<"\n"<< random.size() << " / "	<< random2.size() << "\n";
+			// 	assert(random.size()-1 == random2.size());
+
+
+			// 	tree.print_in_order();
+			// 	tree.print();
+			// 	std::cout << "\n";
+			// 	for (auto it = tree.begin(); it != tree.end(); ++it)
+			// 	{
+			// 		std::cout << "\\"<< *it ;
+			// 	}
+			// 	// std::cout << "\n";
+			// 	// for (auto it = tree.begin(); it != tree.end(); --it)
+			// 	// {
+			// 	// 	std::cout << "/"<< *it ;
+			// 	// }
 				system("pause");
+				std::cout << "\n";
 				
 				system("cls");
 				BinaryTree<int> treeLRT;
@@ -108,10 +109,11 @@ int main()
 				treeLRT.print_in_order();
 				std::cout << "\n";
 				treeLRT.left_rotate(1);
+				treeLRT.check();
 				treeLRT.print_in_order();
 
-std::cout << "\n";
-std::cout << "\n";
+				std::cout << "\n";
+				std::cout << "\n";
 
 				BinaryTree<int> treeRRT;
 				treeRRT.insert(3);
@@ -119,32 +121,33 @@ std::cout << "\n";
 				treeRRT.insert(1);
 				treeRRT.print_in_order();
 				std::cout << "\n";
-				treeRRT.right_rotate(3);
+				treeRRT.right_rotate(1);
+				treeRRT.check();
 				treeRRT.print_in_order();
 
 				std::cout << "\n";
 				system("pause");
 
-				std::cout << "\n";
-				tree.print_in_order();
+				// std::cout << "\n";
+				// tree.print_in_order();
 
-				tree.check();
+				// tree.check();
 
-				std::cout << "\n" << random2[5] << "\n";
-				tree.left_rotate(random2[5]);
-				tree.print_in_order();
+				// std::cout << "\n" << random2[5] << "\n";
+				// tree.left_rotate(random2[5]);
+				// tree.print_in_order();
 
-				std::cout << "\n" << random2[7] << "\n";
-				tree.right_rotate(random2[7]);
-				tree.print_in_order();
-				std::cout << "\n" << tree.height_of_binary_tree()<< "\n";
+				// std::cout << "\n" << random2[7] << "\n";
+				// tree.right_rotate(random2[7]);
+				// tree.print_in_order();
+				// std::cout << "\n" << tree.height_of_binary_tree()<< "\n";
 
 				system("pause");
-			}
-			else
-			{
-				return -1;
-			}
+			//}
+			// else
+			// {
+			// 	return -1;
+			// }
 		}
 
 
