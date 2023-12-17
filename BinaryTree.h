@@ -898,13 +898,13 @@ std::shared_ptr<Node<T>> max_(std::shared_ptr<Node<T>> currentN)
 }
 
 template <typename T>
-void to_vector_(std::vector<T> &accum, std::shared_ptr<Node<T>> currentN)
-{
-	if (currentN)
-	{
-		to_vector_(accum, currentN->left);
-		accum.push_back(currentN->data);
-		to_vector_(accum, currentN->right);
-	}
+void to_vector_(std::vector<T>& accum, std::shared_ptr<Node<T>> currentN) {
+    if (!currentN) {
+        return;
+    }
+    
+    to_vector_(accum, currentN->left);
+    accum.push_back(currentN->data);
+    to_vector_(accum, currentN->right);
 }
 // template <typename T>
