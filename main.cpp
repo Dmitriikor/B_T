@@ -100,6 +100,8 @@ int main()
 			tree.check();
 			system("pause");
 			system("pause");
+			const char* filename = "output.txt";
+			std::remove(filename);
 			system("pause");
 			system("cls");
 			continue;
