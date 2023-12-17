@@ -522,7 +522,7 @@ private:
 			//print_order_chatGPT(root_);
 		}
 
-if (x->parent.lock() == nullptr)
+if (x->right->left != nullptr)
 {
 x->right->right->left = x->right->left;
 x->right->right->left->parent = x->right->right;
