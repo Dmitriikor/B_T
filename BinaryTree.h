@@ -519,7 +519,7 @@ private:
 			{
 				right_rotate_(x->right);
 			}
-			print_order_chatGPT(root_);
+			//print_order_chatGPT(root_);
 		}
 
 if (x->parent.lock() == nullptr)
@@ -607,10 +607,8 @@ recalculate_levels_(x->right->right->left);
 			{
 				left_rotate_(x->left);
 			}
-			print_order_chatGPT(root_);
+			//print_order_chatGPT(root_);
 		}
-
-		// TODO swap
 
 		std::shared_ptr<Node<T>> y = x->left;
 
@@ -658,32 +656,32 @@ public:
 
 #include <fstream>
 #include <memory>
-// template <typename T>
-// void print_order_chatGPT(std::shared_ptr<Node<T>> const currentN, int level = 0)
-// {
-// 	print_order_chatGPT_(currentN, level);
-
-// 	std::ofstream file("output.txt", std::ios::app);
-// 	if (file.is_open())
-//     {
-//        print_order_chatGPT__(currentN, 0, &file);
-// 		file << std::endl;
-// 		file << std::endl;
-// 	 	file << std::endl;
-//         file.close();
-//     }
-//     else
-//     {
-//         std::cerr << "Unable to open the file for writing." << std::endl;
-//     }
-// }
-
 template <typename T>
 void print_order_chatGPT(std::shared_ptr<Node<T>> const currentN, int level = 0)
 {
+	print_order_chatGPT_(currentN, level);
+
+	std::ofstream file("output.txt", std::ios::app);
+	if (file.is_open())
+    {
+       print_order_chatGPT__(currentN, 0, &file);
+		file << std::endl;
+		file << std::endl;
+	 	file << std::endl;
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Unable to open the file for writing." << std::endl;
+    }
+}
+
+template <typename T>
+void print_order_chatGPT_(std::shared_ptr<Node<T>> const currentN, int level = 0)
+{
 	if (currentN)
 	{
-		print_order_chatGPT(currentN->right, level + 1);
+		print_order_chatGPT_(currentN->right, level + 1);
 
 		for (int i = 0; i < level; ++i)
 		{
@@ -693,7 +691,7 @@ void print_order_chatGPT(std::shared_ptr<Node<T>> const currentN, int level = 0)
 		std::cout << currentN->data << "(" << currentN->height << ")"
 				  << "\n";
 
-		print_order_chatGPT(currentN->left, level + 1);
+		print_order_chatGPT_(currentN->left, level + 1);
 	}
 }
 
