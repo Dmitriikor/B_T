@@ -571,15 +571,30 @@ private:
 				print_order_chatGPT(root_);
 				throw 1;
 			}
-		if(x->left->right->left == nullptr && x->left->right->right == nullptr)
-		{
-			std::shared_ptr<Node<T>> temp = x->left->right;
+			// x = -19; 
+			// x->left = -45; 
+			// x->left->right = -21;
+			if(x->left->right->left == nullptr && x->left->right->right == nullptr)
+			{
+				std::shared_ptr<Node<T>> temp = x->left->right; // -21
+				std::shared_ptr<Node<T>> temR = x->left; // -45
 
-		}
-		else
-		{
-			left_rotate_(x->left);
-		}
+				x->left = temp;
+				temp->parent = x;
+
+				temp->left = temR;
+				temR->parent = temp;
+				temR->right = nullptr;
+				temR->height = 1;
+
+				recalculate_levels_(temp);
+				print_order_chatGPT(root_);
+
+			}
+			else
+			{
+				left_rotate_(x->left);
+			}
 			//print_order_chatGPT(root_);
 		}
 
