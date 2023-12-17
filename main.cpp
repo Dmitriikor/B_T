@@ -74,24 +74,24 @@ int main()
 			std::vector<int> random;
 			std::vector<int> random2;
 			BinaryTree<int> tree;
-			fill_randomly(tree, random);
-			// tree.insert(21);
-			// //tree.print_in_order();
-			// tree.insert(19);
-			// //tree.print_in_order();
-			// tree.insert(-19);
-			// //tree.print_in_order();
-			// tree.insert(5);
-			// //tree.print_in_order();
-			// tree.insert(4);
-			// //tree.print_in_order();
-			// tree.insert(-45);
-			// //tree.print_in_order();
-			// tree.insert(14);
-			// //tree.print_in_order();
-			// tree.insert(-21);
-			// //tree.print_in_order();
-			// tree.insert(-6);
+				//fill_randomly(tree, random);
+																																			// tree.insert(21);
+			//tree.print_in_order();
+			tree.insert(-4);		//1
+			//tree.print_in_order();
+			tree.insert(-9);		//2
+			//tree.print_in_order();
+			tree.insert(49);		//3
+			//tree.print_in_order();
+			tree.insert(33);		//4
+			//tree.print_in_order();
+			tree.insert(40);		//5
+			//tree.print_in_order();
+			tree.insert(6);			//6
+			//tree.print_in_order();
+			tree.insert(-21);		//7
+			//tree.print_in_order();
+			tree.insert(-6);		//8
 			std::cout << "\n";
 			tree.check();
 			tree.print_in_order();

@@ -109,6 +109,7 @@ public:
 
 		recalculate_levels__(currentN);
 		std::shared_ptr<Node<T>> parentN = currentN->parent.lock();
+		//print_order_chatGPT(root_);
 		check_lvl_(parentN);
 	}
 
@@ -518,8 +519,16 @@ private:
 			{
 				right_rotate_(x->right);
 			}
-			// print_order_chatGPT(root_);
+			print_order_chatGPT(root_);
 		}
+
+if (x->parent.lock() == nullptr)
+{
+x->right->right->left = x->right->left;
+x->right->right->left->parent = x->right->right;
+x->right->left = nullptr;
+recalculate_levels_(x->right->right->left);
+}
 
 		std::shared_ptr<Node<T>> y = x->right;
 
@@ -549,7 +558,8 @@ private:
 		y->left = x;
 		x->parent = y;
 		recalculate_levels_(x);
-		// print_order_chatGPT(root_);
+		//print_order_chatGPT(root_);
+		check();
 	}
 
 	/*
@@ -574,13 +584,13 @@ private:
 				print_order_chatGPT(root_);
 				throw 1;
 			}
-			// x = -19;
-			// x->left = -45;
-			// x->left->right = -21;
+			// x = 49;
+			// x->left = 33;
+			// x->left->right = 40;
 			if (x->left->right->left == nullptr && x->left->right->right == nullptr)
 			{
-				std::shared_ptr<Node<T>> temp = x->left->right; // -21
-				std::shared_ptr<Node<T>> temR = x->left;		// -45
+				std::shared_ptr<Node<T>> temp = x->left->right; // 40
+				std::shared_ptr<Node<T>> temR = x->left;		// 33
 
 				x->left = temp;
 				temp->parent = x;
@@ -597,7 +607,7 @@ private:
 			{
 				left_rotate_(x->left);
 			}
-			// print_order_chatGPT(root_);
+			print_order_chatGPT(root_);
 		}
 
 		// TODO swap
