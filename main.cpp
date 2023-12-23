@@ -14,12 +14,13 @@ void fill_randomly(BinaryTree<int> &root, std::vector<int> &random, int size = 1
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(-50, 50);
-	bool repeat = false;
 	for (int i = 0; i < size; ++i)
 	{
+		bool repeat = false;
+
 		int random_value = dis(gen);
 
-		for (int j = 0; j < random.size(); ++j)
+		for (size_t j = 0; j < random.size(); ++j)
 		{
 			if (random[j] == random_value)
 			{
@@ -74,8 +75,34 @@ int main()
 			std::vector<int> random;
 			std::vector<int> random2;
 			BinaryTree<int> tree;
-				//fill_randomly(tree, random);
-																																			// tree.insert(21);
+			fill_randomly(tree, random, 13);
+
+			/*
+			 tree.insert(13);
+			//tree.print_in_order();
+			tree.insert(-8);		//1
+			//tree.print_in_order();
+			tree.insert(31);		//2
+			//tree.print_in_order();
+			tree.insert(-50);		//3
+			//tree.print_in_order();
+			tree.insert(10);		//4
+			//tree.print_in_order();
+			tree.insert(26);		//5
+			//tree.print_in_order();
+			tree.insert(45);		//6
+			//tree.print_in_order();
+			tree.insert(1);		//7
+			//tree.print_in_order();
+			tree.insert(11);		//8
+
+			//ERROR:
+			tree.insert(-2);
+			*/
+			
+			
+			/*
+			tree.insert(21);
 			//tree.print_in_order();
 			tree.insert(-4);		//1
 			//tree.print_in_order();
@@ -92,14 +119,16 @@ int main()
 			tree.insert(-21);		//7
 			//tree.print_in_order();
 			tree.insert(-6);		//8
+			*/
+
 			std::cout << "\n";
 			tree.check();
 			tree.print_in_order();
 
 			std::cout << "\n";
 			tree.check();
-			system("pause");
-			system("pause");
+			system("pause"); 
+			system("pause"); 
 			const char* filename = "output.txt";
 			std::remove(filename);
 			system("pause");
@@ -172,7 +201,7 @@ int main()
 			// tree.print_in_order();
 			// std::cout << "\n" << tree.height_of_binary_tree()<< "\n";
 
-			system("pause");
+			//system("pause");
 			//}
 			// else
 			// {

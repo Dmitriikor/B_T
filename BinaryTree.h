@@ -9,6 +9,8 @@
 #include <exception>
 #include <iterator>
 #include <algorithm>
+#include <fstream>
+#include <memory>
 
 template <typename U>
 class no_L_ñhildren
@@ -37,21 +39,13 @@ private:
 	std::shared_ptr<Node<T>> root_;
 	size_t size_ = 0;
 
-	// int left_height = 0;
-	// int right_height = 0;
-
 	friend class iterator;
 
 public:
 	BinaryTree() : root_(nullptr) {}
 
-	void insert(const T &value)
+	void insert(const T& value)
 	{
-
-		std::cout << "\n"
-				  << ANSI_COLOR_RED << value << " - print before insert\n"
-				  << ANSI_COLOR_RESET;
-
 		std::shared_ptr<Node<T>> currentN;
 
 		if (!root_)
@@ -63,27 +57,14 @@ public:
 		}
 		else
 		{
-
-			print_order_chatGPT(root_);
 			currentN = insertR(root_, value);
-			// recalculate_levels__(currentN);
+			recalculate_levels_(currentN);
 			++size_;
-			std::cout << "\n";
-			std::cout << "\n"
-					  << ANSI_COLOR_YELLOW << "print after insert\n"
-					  << ANSI_COLOR_RESET;
-			print_order_chatGPT(root_);
 			check_lvl_(currentN);
-			std::cout << "\n";
-			std::cout << "\n";
-			std::cout << "\n"
-					  << ANSI_COLOR_GREEN << "print after check_lvl_\n"
-					  << ANSI_COLOR_RESET;
-			print_order_chatGPT(root_);
 			return;
 		}
 
-		throw 1;
+		//throw 1;
 	}
 
 	void check_lvl_(std::shared_ptr<Node<T>> currentN)
@@ -93,23 +74,29 @@ public:
 			return;
 		}
 
+		std::shared_ptr<Node<T>> parentN = currentN->parent.lock();
+
 		int L_temp = (currentN->left == nullptr) ? 0 : (currentN->left->height);
 		int R_temp = (currentN->right == nullptr) ? 0 : (currentN->right->height);
 
 		if (L_temp - R_temp > 1)
 		{
+			if (currentN->left->left == nullptr)
+			{
+				left_rotate_(currentN->left);
+			}
+
 			right_rotate_(currentN);
 		}
 		else if (L_temp - R_temp < -1)
 		{
-			// std::cout <<"\n"  << currentN->data << " = L_temp - R_temp < -1 Check\n";
-			// print_order_chatGPT(root_);
+			if (currentN->right->right == nullptr)
+			{
+				right_rotate_(currentN->right);
+			}
+
 			left_rotate_(currentN);
 		}
-
-		recalculate_levels__(currentN);
-		std::shared_ptr<Node<T>> parentN = currentN->parent.lock();
-		//print_order_chatGPT(root_);
 		check_lvl_(parentN);
 	}
 
@@ -125,21 +112,24 @@ public:
 
 	void print_in_order()
 	{
-
-		// print_orderR(root_, 0);
-		std::cout << ANSI_BG_GREEN;
+		std::cout << std::endl;
+		std::cout << std::endl;
+		std::cout << ANSI_COLOR_GREEN;
 		std::cout << "\n";
+		
 		print_order_chatGPT(root_);
+
 		std::cout << ANSI_COLOR_RESET;
+
 		std::cout << "\n";
 	}
 
-	bool find(const T &value)
+	bool find(const T& value)
 	{
 		std::shared_ptr<Node<T>> test = find_(value, root_);
-		std::cout << "\n";
 		if (test == nullptr)
 		{
+			std::cout << "\n";
 			std::cout << "none\n";
 			return false;
 		}
@@ -147,10 +137,10 @@ public:
 		return true;
 	}
 
-	bool erase(const T &value)
+	bool erase(const T& value)
 	{
 		std::cout << "\n"
-				  << value << "\n";
+			<< value << "\n";
 		return erase_(value);
 	}
 
@@ -160,13 +150,6 @@ public:
 			throw std::runtime_error("Root is nullptr");
 
 		return min_(root_)->data;
-
-		// std::shared_ptr<Node<T>> result = min_(root_);
-
-		// if (!result)
-		//	return NULL; // trow
-
-		// return result->data;
 	}
 
 	T max()
@@ -177,7 +160,7 @@ public:
 		return max_(root_)->data;
 	}
 
-	void to_vector(std::vector<T> &accum)
+	void to_vector(std::vector<T>& accum)
 	{
 		to_vector_(accum, root_);
 	}
@@ -194,8 +177,8 @@ private:
 	public:
 		using value_type = T;
 		using difference_type = std::ptrdiff_t;
-		using pointer = T *;
-		using reference = T &;
+		using pointer = T*;
+		using reference = T&;
 		using iterator_category = std::forward_iterator_tag;
 
 		explicit iterator(std::shared_ptr<Node<T>> currentN) : currentN(currentN)
@@ -207,7 +190,7 @@ private:
 			return currentN->data;
 		}
 
-		iterator &operator++()
+		iterator& operator++()
 		{
 			if (currentN == nullptr)
 				throw std::runtime_error("currentN is nullptr");
@@ -228,7 +211,7 @@ private:
 			return *this;
 		}
 
-		iterator &operator--()
+		iterator& operator--()
 		{
 			if (currentN == nullptr)
 				throw std::runtime_error("currentN is nullptr");
@@ -245,13 +228,13 @@ private:
 			return *this;
 		}
 
-		bool operator!=(const iterator &other) const
+		bool operator!=(const iterator& other) const
 		{
 			return currentN != other.currentN;
 		}
 	};
 
-	bool erase_(const T &value)
+	bool erase_(const T& value)
 	{
 		std::shared_ptr<Node<T>> erased = find_(value, root_);
 
@@ -291,7 +274,7 @@ private:
 		return true;
 	}
 
-	std::shared_ptr<Node<T>> find_(const T &val, std::shared_ptr<Node<T>> currentN)
+	std::shared_ptr<Node<T>> find_(const T& val, std::shared_ptr<Node<T>> currentN)
 	{
 		while (currentN)
 		{
@@ -306,32 +289,12 @@ private:
 				continue;
 			}
 
-			// if (currentN->data < val)
-			{
-				currentN = currentN->right;
-			}
+			currentN = currentN->right;
+			
 		}
 
 		return nullptr;
 	}
-
-	// if (currentN)
-	//{
-	//	std::cout << currentN->data;
-	//	if (currentN->data >= val)
-	//	{
-	//		if (currentN->left == nullptr)
-	//			return currentN;
-	//		findR(currentN->left, val);
-	//	}
-	//	if (currentN->data < val)
-	//	{
-	//		if (currentN->right == nullptr //&& val > currentN->data*/)
-	//			return currentN;
-	//		findR(currentN->right, val);
-	//	}
-	// }
-	// }
 
 	static void print_orderR(std::shared_ptr<Node<T>> currentN, int counter)
 	{
@@ -359,7 +322,7 @@ private:
 		}
 	}
 
-	static std::shared_ptr<Node<T>> insertR(std::shared_ptr<Node<T>> currentN, const T &value)
+	static std::shared_ptr<Node<T>> insertR(std::shared_ptr<Node<T>> currentN, const T& value)
 	{
 		if (value < currentN->data)
 		{
@@ -387,16 +350,14 @@ private:
 				return currentN->right;
 			}
 		}
-
-		throw 1;
 	}
 
 public:
-	void right_rotate(const T &value)
+	void right_rotate(const T& value)
 	{
 		right_rotate_(find_(value, root_));
 	}
-	void left_rotate(const T &value)
+	void left_rotate(const T& value)
 	{
 		left_rotate_(find_(value, root_));
 	}
@@ -421,11 +382,6 @@ public:
 	int height_of_binary_tree()
 	{
 		int test = height_of_binary_tree_(root_);
-		// min__(root_, left_height);
-		// max__(root_, right_height);
-		// int max = std::max(left_height, right_height);
-		// assert(test == max+1);
-
 		return test;
 	}
 
@@ -467,15 +423,10 @@ private:
 			return 0;
 
 		return currentN->height;
-		/*if (!currentN)
-		{
-			return 0;
-		}
 
-		size_t left_height = height_of_binary_tree_(currentN->left);
-		size_t right_height = height_of_binary_tree_(currentN->right);
-		return std::max(left_height, right_height) + 1;*/
 	}
+
+	//---------------------------------------------------------------------------------------------------------
 
 	/*
 		x (currentN)
@@ -492,50 +443,12 @@ private:
 			return;
 		}
 
-		if (x->right->right == nullptr)
-		{
-
-			if (x->right->left == nullptr)
-			{
-				print_order_chatGPT(root_);
-				throw 1;
-			}
-			if (x->right->left->left == nullptr && x->right->left->right == nullptr)
-			{
-				std::shared_ptr<Node<T>> temp = x->right->left;
-				std::shared_ptr<Node<T>> tempR = x->right;
-
-				x->right = temp;
-				temp->parent = x;
-
-				temp->right = tempR;
-				tempR->parent = temp;
-				tempR->left = nullptr;
-				tempR->height = 1;
-				recalculate_levels_(temp);
-				// print_order_chatGPT(root_);
-			}
-			else
-			{
-				right_rotate_(x->right);
-			}
-			//print_order_chatGPT(root_);
-		}
-
-if (x->right->left != nullptr)
-{
-x->right->right->left = x->right->left;
-x->right->right->left->parent = x->right->right;
-x->right->left = nullptr;
-recalculate_levels_(x->right->right->left);
-}
-
 		std::shared_ptr<Node<T>> y = x->right;
 
 		x->right = y->left;
 		if (y->left != nullptr)
 		{
-			y->left->parent.lock() = x;
+			y->left->parent = x;
 		}
 
 		y->parent = x->parent.lock();
@@ -558,18 +471,17 @@ recalculate_levels_(x->right->right->left);
 		y->left = x;
 		x->parent = y;
 		recalculate_levels_(x);
-		//print_order_chatGPT(root_);
-		check();
+		recalculate_levels_(y);
 	}
 
-	/*
-					x (currentN)
-				  /
-				y					=>   y
-			  /				  			/ \
-			z				  		   x   z
 
-		*/
+	/*
+	//     x (currentN)
+	//    /
+	//   y              =>   y
+	//  /                   / \
+	// z                   x   z
+	*/
 	void right_rotate_(std::shared_ptr<Node<T>> x)
 	{
 		if (x->left == nullptr)
@@ -577,45 +489,12 @@ recalculate_levels_(x->right->right->left);
 			return;
 		}
 
-		if (x->left->left == nullptr)
-		{
-			if (x->left->right == nullptr)
-			{
-				print_order_chatGPT(root_);
-				throw 1;
-			}
-			// x = 49;
-			// x->left = 33;
-			// x->left->right = 40;
-			if (x->left->right->left == nullptr && x->left->right->right == nullptr)
-			{
-				std::shared_ptr<Node<T>> temp = x->left->right; // 40
-				std::shared_ptr<Node<T>> temR = x->left;		// 33
-
-				x->left = temp;
-				temp->parent = x;
-
-				temp->left = temR;
-				temR->parent = temp;
-				temR->right = nullptr;
-				temR->height = 1;
-
-				recalculate_levels_(temp);
-				// print_order_chatGPT(root_);
-			}
-			else
-			{
-				left_rotate_(x->left);
-			}
-			//print_order_chatGPT(root_);
-		}
-
 		std::shared_ptr<Node<T>> y = x->left;
 
 		x->left = y->right;
 		if (y->right != nullptr)
 		{
-			y->right->parent.lock() = x;
+			y->right->parent = x;
 		}
 
 		y->parent = x->parent;
@@ -639,8 +518,9 @@ recalculate_levels_(x->right->right->left);
 		x->parent = y;
 
 		recalculate_levels_(x);
-		// print_order_chatGPT(root_);
+		recalculate_levels_(y);
 	}
+	//--------------------------------------------------------------------------------------------------------
 
 public:
 	iterator begin()
@@ -654,26 +534,25 @@ public:
 	}
 };
 
-#include <fstream>
-#include <memory>
 template <typename T>
 void print_order_chatGPT(std::shared_ptr<Node<T>> const currentN, int level = 0)
 {
 	print_order_chatGPT_(currentN, level);
+	std::cout << std::endl;
 
 	std::ofstream file("output.txt", std::ios::app);
 	if (file.is_open())
-    {
-       print_order_chatGPT__(currentN, 0, &file);
+	{
+		print_order_chatGPT__(currentN, 0, &file);
 		file << std::endl;
 		file << std::endl;
-	 	file << std::endl;
-        file.close();
-    }
-    else
-    {
-        std::cerr << "Unable to open the file for writing." << std::endl;
-    }
+		file << std::endl;
+		file.close();
+	}
+	else
+	{
+		std::cerr << "Unable to open the file for writing." << std::endl;
+	}
 }
 
 template <typename T>
@@ -685,18 +564,18 @@ void print_order_chatGPT_(std::shared_ptr<Node<T>> const currentN, int level = 0
 
 		for (int i = 0; i < level; ++i)
 		{
-			std::cout << "|\t";
+			std::cout  << "|\t";
 		}
 
 		std::cout << currentN->data << "(" << currentN->height << ")"
-				  << "\n";
+			<< std::endl;
 
 		print_order_chatGPT_(currentN->left, level + 1);
 	}
 }
 
 template <typename T>
-void print_order_chatGPT__(std::shared_ptr<Node<T>> const currentN, int level = 0, std::ofstream *fileStream = nullptr)
+void print_order_chatGPT__(std::shared_ptr<Node<T>> const currentN, int level = 0, std::ofstream* fileStream = nullptr)
 {
 	if (currentN)
 	{
@@ -705,19 +584,19 @@ void print_order_chatGPT__(std::shared_ptr<Node<T>> const currentN, int level = 
 		for (int i = 0; i < level; ++i)
 		{
 			if (fileStream)
-				(*fileStream) << "|\t";
+				(*fileStream) << "| \t ";
 		}
 
 		if (fileStream)
 			(*fileStream) << currentN->data << "(" << currentN->height << ")"
-						  << "\n";
+			<< "\n";
 
 		print_order_chatGPT__(currentN->left, level + 1, fileStream);
 	}
 }
 
 template <typename T>
-void erase_no_child(std::shared_ptr<Node<T>> &erased, std::shared_ptr<Node<T>> &root_)
+void erase_no_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
 {
 	std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
 
@@ -743,32 +622,22 @@ void erase_no_child(std::shared_ptr<Node<T>> &erased, std::shared_ptr<Node<T>> &
 	throw std::logic_error("Error deleting resource");
 }
 template <typename T>
-bool erase_L_child(std::shared_ptr<Node<T>> &erased, std::shared_ptr<Node<T>> &root_)
+bool erase_L_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
 {
 	std::shared_ptr<Node<T>> parent = erased->parent.lock();
 	std::shared_ptr<Node<T>> child = erased->left;
 
 	if (!parent)
 	{
-		/*
-		std::shared_ptr<Node<T>> new_root = erased->left;
-		root_->left = nullptr;
-		root_ = new_root;
-		erased.reset();
-		*/
 		child->parent = root_->parent;
 		root_ = child;
 		return true;
 	}
 
-	// std::cout << "\nerased->left != nullptr && erased->right == nullptr\n";
-
 	if (erased == parent->left)
 	{
 		parent->left = child;
 		child->parent = parent;
-		// erased->left = nullptr;
-		// erased.reset(); //erased = nullptr;
 		return true;
 	}
 
@@ -776,8 +645,6 @@ bool erase_L_child(std::shared_ptr<Node<T>> &erased, std::shared_ptr<Node<T>> &r
 	{
 		parent->right = child;
 		child->parent = parent;
-		// erased->right = nullptr;
-		// erased.reset();//erased = nullptr;
 		return true;
 	}
 
@@ -785,30 +652,23 @@ bool erase_L_child(std::shared_ptr<Node<T>> &erased, std::shared_ptr<Node<T>> &r
 }
 
 template <typename T>
-bool erase_R_child(std::shared_ptr<Node<T>> &erased, std::shared_ptr<Node<T>> &root_)
+bool erase_R_child(std::shared_ptr<Node<T>>& erased, std::shared_ptr<Node<T>>& root_)
 {
 	std::shared_ptr<Node<T>> parent = erased->parent.lock();
 	std::shared_ptr<Node<T>> child = erased->right;
 
 	if (!parent)
 	{
-		/*std::shared_ptr<Node<T>> new_root = erased->right;
-		root_->right = nullptr;
-		root_ = new_root;
-		erased.reset();*/
 		child->parent = root_->parent;
 		root_ = child;
 		return true;
 	}
 
-	// std::cout << "\nerased->left == nullptr && erased->right != nullptr\n";
-
 	if (erased == parent->left)
 	{
 		parent->left = child;
 		child->parent = parent;
-		// erased->left = nullptr;
-		// erased.reset(); //erased = nullptr;
+
 		return true;
 	}
 
@@ -816,8 +676,7 @@ bool erase_R_child(std::shared_ptr<Node<T>> &erased, std::shared_ptr<Node<T>> &r
 	{
 		parent->right = child;
 		child->parent = parent;
-		// erased->right = nullptr;
-		// erased.reset(); //erased = nullptr;
+
 		return true;
 	}
 
@@ -825,13 +684,11 @@ bool erase_R_child(std::shared_ptr<Node<T>> &erased, std::shared_ptr<Node<T>> &r
 }
 
 template <typename T>
-void erase_L_and_R_child(std::shared_ptr<Node<T>> erased, std::shared_ptr<Node<T>> &root_, std::shared_ptr<Node<T>> max)
+void erase_L_and_R_child(std::shared_ptr<Node<T>> erased, std::shared_ptr<Node<T>>& root_, std::shared_ptr<Node<T>> max)
 {
 	std::shared_ptr<Node<T>> erased_parent = erased->parent.lock();
 	std::shared_ptr<Node<T>> erased_child_L = erased->left;
 	std::shared_ptr<Node<T>> erased_child_R = erased->right;
-
-	// std::cout << "\nerased->left != nullptr && erased->right != nullptr\n";
 
 	if (!max)
 		throw std::logic_error("Error deleting resource");
@@ -899,12 +756,11 @@ std::shared_ptr<Node<T>> max_(std::shared_ptr<Node<T>> currentN)
 
 template <typename T>
 void to_vector_(std::vector<T>& accum, std::shared_ptr<Node<T>> currentN) {
-    if (!currentN) {
-        return;
-    }
-    
-    to_vector_(accum, currentN->left);
-    accum.push_back(currentN->data);
-    to_vector_(accum, currentN->right);
+	if (!currentN) {
+		return;
+	}
+
+	to_vector_(accum, currentN->left);
+	accum.push_back(currentN->data);
+	to_vector_(accum, currentN->right);
 }
-// template <typename T>

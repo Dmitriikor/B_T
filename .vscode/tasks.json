@@ -6,7 +6,11 @@
             "command": "cl.exe",
             "args": [
                 "/Zi",
+                "/W4",
+                "/Od",
+                "/RTC1",
                 "/EHsc",
+                "/analyze",
                 "/nologo",
                 "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "${workspaceFolder}/*.cpp"
