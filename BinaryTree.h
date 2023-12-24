@@ -204,11 +204,11 @@ private:
 			if (currentN == nullptr)
 				throw std::runtime_error("currentN is nullptr");
 
-			if(is_end_x)
-			{
-				currentN = nullptr;
-				return iterator(nullptr, nullptr);
-			}
+			// if(is_end_x)
+			// {
+			// 	return iterator(nullptr, nullptr);
+			// 	throw std::runtime_error("is_end_x true");
+			// }
 
 			if (currentN->right != nullptr)
 			{
@@ -223,10 +223,10 @@ private:
 				currentN = currentN->parent.lock();
 			}
 
-			if (currentN == _max_)
-			{
-				is_end_x = true;
-			}
+			// if (currentN == _max_)
+			// {
+			// 	is_end_x = true;
+			// }
 
 			return *this;
 		}
@@ -236,11 +236,11 @@ private:
 			if (currentN == nullptr)
 				throw std::runtime_error("currentN is nullptr");
 
-			if(is_end_n)
-			{
-				currentN = nullptr;
-				return iterator(nullptr, nullptr);
-			}
+			// if(is_end_n)
+			// {
+			// 	return iterator(nullptr, nullptr);
+			// 	throw std::runtime_error("is_end_n true");
+			// }
 
 			if (currentN->left != nullptr) 
 			{
@@ -254,21 +254,25 @@ private:
 				}
 				currentN = currentN->parent.lock();
 			}
-			if (currentN == _min_)
-			{
-				is_end_n = true;
-			}
+			// if (currentN == _min_)
+			// {
+			// 	is_end_n = true;
+			// }
 
 			return *this;
 		}
 
 		bool operator!=(const iterator& other) const
 		{
-			return (currentN != nullptr);
+			return (currentN != other.currentN);
 		}
 		bool operator==(const iterator& other) const
 		{
-			return currentN == nullptr;
+			return currentN == other.currentN;
+		}
+		bool operator!=(std::nullptr_t) const
+		{
+			return (currentN != nullptr);
 		}
 	};
 

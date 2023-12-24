@@ -131,7 +131,7 @@ int main()
 
 				int cntr = 0;
 				bool flag = true;
-				for (auto it = tree.begin(); it != tree.end() && flag; ++it)
+				for (auto it = tree.begin(); it != nullptr && flag; ++it)
 				{
 					cntr++;
 					std::cout << "\\"<< *it;
@@ -149,23 +149,38 @@ int main()
 					}
 				}
 				std::cout << "\\";
-
-				std::cout << "\n" << "run -- \n";
-				for (auto it = tree.end(); it != tree.begin(); --it)
-				{
+			
+				{			
+					std::cout << "\n" << "run -- \n";
+					auto it = tree.end();
+					for ( ; it != tree.begin(); --it)
+					{
+						std::cout << "\\"<< *it;
+					}
 					std::cout << "\\"<< *it;
+					std::cout << "\\";
 				}
-				std::cout << "\\";
+				std::cout << "\n";
+				{			
+					std::cout << "\n" << "run -- to nullptr \n";
+					
+					for (auto it = tree.end(); it != nullptr; --it)
+					{
+						std::cout << "\\"<< *it;
+					}
+					std::cout << "\\";
+				}
+				
 
-			std::cout << "\n";
-			tree.print_in_order();
-			tree.erase(random[12]);
-			tree.print_in_order();
-			tree.erase(random[0]);
-			tree.print_in_order();
-			tree.erase(random[6]);
-			tree.print_in_order();
-			std::cout << "\n";
+			// std::cout << "\n";
+			// tree.print_in_order();
+			// tree.erase(random[12]);
+			// tree.print_in_order();
+			// tree.erase(random[0]);
+			// tree.print_in_order();
+			// tree.erase(random[6]);
+			// tree.print_in_order();
+			// std::cout << "\n";
 			tree.print_in_order();
 			tree.check();
 			system("pause"); 
