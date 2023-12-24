@@ -13,7 +13,7 @@ void fill_randomly(BinaryTree<int> &root, std::vector<int> &random, int size = 1
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> dis(-50, 50);
+	std::uniform_int_distribution<int> dis(-150, 150);
 	for (int i = 0; i < size; ++i)
 	{
 		bool repeat = false;
