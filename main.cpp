@@ -13,7 +13,7 @@ void fill_randomly(BinaryTree<int> &root, std::vector<int> &random, int size = 1
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis(-50, 50);
+	std::uniform_int_distribution<int> dis(-50, 50);
 	for (int i = 0; i < size; ++i)
 	{
 		bool repeat = false;
@@ -42,7 +42,7 @@ int return_randomly(std::vector<int> &random)
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	std::uniform_int_distribution<> dis(0, (int)random.size() - (1));
+	std::uniform_int_distribution<int> dis(0, (int)random.size() - (1));
 
 	return random[dis(gen)];
 }
@@ -75,7 +75,6 @@ int main()
 			std::vector<int> random;
 			std::vector<int> random2;
 			BinaryTree<int> tree;
-			fill_randomly(tree, random, 13);
 
 			/*
 			 tree.insert(13);
@@ -121,10 +120,17 @@ int main()
 			tree.insert(-6);		//8
 			*/
 
+			fill_randomly(tree, random, 13);
+
 			std::cout << "\n";
 			tree.check();
 			tree.print_in_order();
-
+			tree.erase(random[12]);
+			tree.print_in_order();
+			tree.erase(random[0]);
+			tree.print_in_order();
+			tree.erase(random[6]);
+			tree.print_in_order();
 			std::cout << "\n";
 			tree.check();
 			system("pause"); 

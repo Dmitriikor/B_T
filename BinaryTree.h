@@ -171,8 +171,6 @@ private:
 	private:
 		std::shared_ptr<Node<T>> currentN;
 		friend class BinaryTree;
-		bool is_first_m = true;
-		bool is_first_l = true;
 
 	public:
 		using value_type = T;
@@ -234,16 +232,36 @@ private:
 		}
 	};
 
+	public:
+	iterator begin()
+	{
+		return iterator(min_(root_));
+	}
+
+	iterator end()
+	{
+		return iterator(nullptr);
+	}
+
+	void check()
+	{
+		check__(root_);
+	}
+
+private:
 	bool erase_(const T& value)
 	{
 		std::shared_ptr<Node<T>> erased = find_(value, root_);
 
 		if (!erased)
 			return false;
-
-		--size_;
-
-		return erase__(erased);
+		bool to_return = erase__(erased);
+		if (to_return)
+			{
+				--size_;
+				check_lvl_(erased->parent.lock());
+			}
+		return to_return;
 	}
 
 	bool erase__(std::shared_ptr<Node<T>> erased)
@@ -251,11 +269,20 @@ private:
 		std::shared_ptr<Node<T>> parentN = erased->parent.lock();
 
 		if (erased->left == nullptr && erased->right == nullptr)
+		{
 			erase_no_child(erased, root_);
+			recalculate_levels_(erased->parent.lock());
+		}
 		else if (erased->left != nullptr && erased->right == nullptr)
+		{
 			erase_L_child(erased, root_);
+			recalculate_levels_(erased->left);
+		}
 		else if (erased->left == nullptr && erased->right != nullptr)
+		{
 			erase_R_child(erased, root_);
+			recalculate_levels_(erased->right);
+		}
 		else
 		{
 			// находим максимальный в левом поддереве
@@ -267,9 +294,10 @@ private:
 				parentN = max;
 
 			erase_L_and_R_child(erased, root_, max);
+			recalculate_levels_(max_(erased->left));
 		}
 
-		recalculate_levels_(parentN);
+		//recalculate_levels_(parentN);
 
 		return true;
 	}
@@ -352,20 +380,6 @@ private:
 		}
 	}
 
-public:
-	void right_rotate(const T& value)
-	{
-		right_rotate_(find_(value, root_));
-	}
-	void left_rotate(const T& value)
-	{
-		left_rotate_(find_(value, root_));
-	}
-	void check()
-	{
-		check__(root_);
-	}
-
 	void check__(std::shared_ptr<Node<T>> currentN)
 	{
 		if (currentN)
@@ -425,9 +439,7 @@ private:
 		return currentN->height;
 
 	}
-
-	//---------------------------------------------------------------------------------------------------------
-
+//---------------------------------------------------------------------------------------------------------
 	/*
 		x (currentN)
 		 \
@@ -474,14 +486,11 @@ private:
 		recalculate_levels_(y);
 	}
 
-
-	/*
-	//     x (currentN)
-	//    /
-	//   y              =>   y
-	//  /                   / \
-	// z                   x   z
-	*/
+	///@param    x (currentN)
+	///@param  	/
+	///@param   y              =>   y
+	///@param  /                   / \
+	///@param z                   x   z
 	void right_rotate_(std::shared_ptr<Node<T>> x)
 	{
 		if (x->left == nullptr)
@@ -521,17 +530,6 @@ private:
 		recalculate_levels_(y);
 	}
 	//--------------------------------------------------------------------------------------------------------
-
-public:
-	iterator begin()
-	{
-		return iterator(min_(root_));
-	}
-
-	iterator end()
-	{
-		return iterator(nullptr);
-	}
 };
 
 template <typename T>
