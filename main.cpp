@@ -120,10 +120,44 @@ int main()
 			tree.insert(-6);		//8
 			*/
 
-			fill_randomly(tree, random, 13);
+			fill_randomly(tree, random, 20);
 
 			std::cout << "\n";
 			tree.check();
+
+				std::cout << "\\";
+				tree.print();
+				std::cout << "\n";
+
+				int cntr = 0;
+				bool flag = true;
+				for (auto it = tree.begin(); it != tree.end() && flag; ++it)
+				{
+					cntr++;
+					std::cout << "\\"<< *it;
+					if (cntr == 20 && flag)
+					{	
+						std::cout << "\n";					
+						while (cntr > 1)
+						{
+							std::cout << "\\"<< *it ;
+							--it;
+							cntr--;
+						}
+						std::cout << "\\"<< *it ;
+						flag = false;
+					}
+				}
+				std::cout << "\\";
+
+				std::cout << "\n" << "run -- \n";
+				for (auto it = tree.end(); it != tree.begin(); --it)
+				{
+					std::cout << "\\"<< *it;
+				}
+				std::cout << "\\";
+
+			std::cout << "\n";
 			tree.print_in_order();
 			tree.erase(random[12]);
 			tree.print_in_order();
@@ -132,6 +166,7 @@ int main()
 			tree.erase(random[6]);
 			tree.print_in_order();
 			std::cout << "\n";
+			tree.print_in_order();
 			tree.check();
 			system("pause"); 
 			system("pause"); 

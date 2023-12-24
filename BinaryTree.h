@@ -40,6 +40,7 @@ private:
 	size_t size_ = 0;
 
 	friend class iterator;
+	
 
 public:
 	BinaryTree() : root_(nullptr) {}
@@ -166,11 +167,18 @@ public:
 	}
 
 private:
+    std::shared_ptr<Node<T>> getRoot() const {
+        return root_;
+    }
 	class iterator : public std::iterator<std::forward_iterator_tag, T>
 	{
 	private:
 		std::shared_ptr<Node<T>> currentN;
-		friend class BinaryTree;
+		std::shared_ptr<Node<T>> _min_;
+		std::shared_ptr<Node<T>> _max_;
+		bool is_end_n = false;
+		bool is_end_x = false;
+		 friend class BinaryTree<T>;
 
 	public:
 		using value_type = T;
@@ -179,8 +187,11 @@ private:
 		using reference = T&;
 		using iterator_category = std::forward_iterator_tag;
 
-		explicit iterator(std::shared_ptr<Node<T>> currentN) : currentN(currentN)
+		explicit iterator(std::shared_ptr<Node<T>> currentN_, std::shared_ptr<Node<T>> roo_)
 		{
+			_min_ = min_(roo_);
+			_max_ = max_(roo_);
+			currentN = currentN_;
 		}
 
 		reference operator*()
@@ -192,6 +203,12 @@ private:
 		{
 			if (currentN == nullptr)
 				throw std::runtime_error("currentN is nullptr");
+
+			if(is_end_x)
+			{
+				currentN = nullptr;
+				return iterator(nullptr, nullptr);
+			}
 
 			if (currentN->right != nullptr)
 			{
@@ -206,6 +223,11 @@ private:
 				currentN = currentN->parent.lock();
 			}
 
+			if (currentN == _max_)
+			{
+				is_end_x = true;
+			}
+
 			return *this;
 		}
 
@@ -214,13 +236,27 @@ private:
 			if (currentN == nullptr)
 				throw std::runtime_error("currentN is nullptr");
 
-			if (currentN->left != nullptr)
+			if(is_end_n)
 			{
-				currentN = currentN->left;
+				currentN = nullptr;
+				return iterator(nullptr, nullptr);
 			}
-			else
+
+			if (currentN->left != nullptr) 
 			{
-				currentN = currentN->parent.lock()->right;
+				currentN = max_(currentN->left);
+			} 
+			else 
+			{
+				while (currentN->parent.lock() != nullptr && currentN->parent.lock()->left == currentN) 
+				{
+					currentN = currentN->parent.lock();
+				}
+				currentN = currentN->parent.lock();
+			}
+			if (currentN == _min_)
+			{
+				is_end_n = true;
 			}
 
 			return *this;
@@ -228,19 +264,23 @@ private:
 
 		bool operator!=(const iterator& other) const
 		{
-			return currentN != other.currentN;
+			return (currentN != nullptr);
+		}
+		bool operator==(const iterator& other) const
+		{
+			return currentN == nullptr;
 		}
 	};
 
 	public:
 	iterator begin()
 	{
-		return iterator(min_(root_));
+		return iterator(min_(root_), root_);
 	}
 
 	iterator end()
 	{
-		return iterator(nullptr);
+		return iterator(max_(root_), root_);
 	}
 
 	void check()
