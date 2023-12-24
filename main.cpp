@@ -119,8 +119,8 @@ int main()
 			//tree.print_in_order();
 			tree.insert(-6);		//8
 			*/
-
-			fill_randomly(tree, random, 20);
+			int size = 13;
+			fill_randomly(tree, random, size);
 
 			std::cout << "\n";
 			tree.check();
@@ -135,9 +135,9 @@ int main()
 				{
 					cntr++;
 					std::cout << "\\"<< *it;
-					if (cntr == 20 && flag)
+					if (cntr == size && flag)
 					{	
-						std::cout << "\n";					
+						std::cout << "\n" << "while it--\n";					
 						while (cntr > 1)
 						{
 							std::cout << "\\"<< *it ;
@@ -170,7 +170,6 @@ int main()
 					}
 					std::cout << "\\";
 				}
-				
 
 			// std::cout << "\n";
 			// tree.print_in_order();

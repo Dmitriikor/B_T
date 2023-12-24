@@ -174,10 +174,10 @@ private:
 	{
 	private:
 		std::shared_ptr<Node<T>> currentN;
-		std::shared_ptr<Node<T>> _min_;
-		std::shared_ptr<Node<T>> _max_;
-		bool is_end_n = false;
-		bool is_end_x = false;
+		//std::shared_ptr<Node<T>> _min_;
+		//std::shared_ptr<Node<T>> _max_;
+		//bool is_end_n = false;
+		//bool is_end_x = false;
 		 friend class BinaryTree<T>;
 
 	public:
@@ -187,10 +187,10 @@ private:
 		using reference = T&;
 		using iterator_category = std::forward_iterator_tag;
 
-		explicit iterator(std::shared_ptr<Node<T>> currentN_, std::shared_ptr<Node<T>> roo_)
+		explicit iterator(std::shared_ptr<Node<T>> currentN_)
 		{
-			_min_ = min_(roo_);
-			_max_ = max_(roo_);
+			//_min_ = min_(roo_);
+			//_max_ = max_(roo_);
 			currentN = currentN_;
 		}
 
@@ -279,12 +279,12 @@ private:
 	public:
 	iterator begin()
 	{
-		return iterator(min_(root_), root_);
+		return iterator(min_(root_));
 	}
 
 	iterator end()
 	{
-		return iterator(max_(root_), root_);
+		return iterator(max_(root_));
 	}
 
 	void check()
